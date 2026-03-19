@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "linkedin-cli"
+version = "0.1.0"
+description = "Unofficial LinkedIn CLI — session-based authentication, profile/company lookup, Voyager API access, and a safe write system with dry-run defaults"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = []
+keywords = ["linkedin", "cli", "voyager", "automation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Utilities",
+]
+
+dependencies = [
+    "requests>=2.28",
+    "beautifulsoup4>=4.11",
+]
+
+[project.optional-dependencies]
+lxml = ["lxml>=4.9"]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+]
+
+[project.scripts]
+linkedin = "linkedin_cli.cli:main"
+
+[project.urls]
+Repository = "https://github.com/codyrobertson/linkedin-cli"
+
+[tool.setuptools.packages.find]
+include = ["linkedin_cli*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
