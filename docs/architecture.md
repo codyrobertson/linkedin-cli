@@ -2,9 +2,21 @@
 
 Context: `tools/linkedin_cli.py` already has working cookie-backed auth/session handling and read-only fetches, but there is no official API access. This design aims to expand usefulness fast while minimizing duplicate actions, brittle behavior, and account risk.
 
+Published distribution:
+- PyPI package name: `linkedin-discovery-cli`
+- Import/module path: `linkedin_cli`
+- Operator command: `linkedin`
+
 ## 1) Core recommendation
 
 Use a **plan -> persist -> execute -> reconcile -> notify** pipeline for all write actions.
+
+For operator trust, pair that pipeline with:
+- explicit local diagnostics (`doctor`)
+- inspectable action artifacts (`plan`, `last_result`, `reconcile`, `cancel`)
+- a local workflow layer for saved searches, templates, and contact state that does not depend on LinkedIn writes
+- a unified discovery queue that merges search, inbox, and engagement signals into one ranked prospect surface
+- adaptive ranking that reweights sources and signals from observed positive outcomes
 
 Do **not** let commands directly POST/PUT and exit.
 
@@ -125,6 +137,10 @@ Under `~/.hermes/linkedin/`:
   - Redacted response metadata/body.
 - `artifacts/<action_id>/reconcile.json`
   - Evidence used to decide whether remote state changed.
+- `artifacts/<action_id>/last_result.json`
+  - Latest execution or retry scheduling outcome.
+- `artifacts/<action_id>/cancel.json`
+  - Local cancellation metadata when an action is canceled.
 - `locks/account.lock`
   - Single-account write lock.
 
@@ -139,6 +155,14 @@ Because you need:
 - future scheduling or queueing.
 
 A single SQLite file is still simple enough for CLI use.
+
+It is also a pragmatic place to store lightweight workflow metadata:
+- saved searches
+- reusable message/post templates
+- contact notes, tags, and lead stage
+- inbox triage state for conversation follow-up
+- prospect records, discovery sources, and engagement signals for ranking
+- prospect aliases and dedupe keys to merge identity across search, inbox, and public engagement
 
 ## 5) Minimal SQLite schema
 
@@ -183,6 +207,16 @@ Unique index:
 - `error TEXT`
 - `request_artifact_path TEXT`
 - `response_artifact_path TEXT`
+
+### Optional local workflow tables
+- `saved_searches`
+- `templates`
+- `contacts`
+- `inbox_triage`
+- `prospects`
+- `prospect_sources`
+- `prospect_signals`
+- `prospect_aliases`
 
 ### `webhook_deliveries`
 - `delivery_id TEXT PRIMARY KEY`

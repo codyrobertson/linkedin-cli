@@ -107,6 +107,44 @@ class ExecuteActionIdempotencyTests(unittest.TestCase):
         self.assertEqual(result["status"], "duplicate_skipped")
         self.assertEqual(result["existing_action"]["action_id"], "act_existing")
 
+    def test_execute_action_marks_retry_scheduled_on_retryable_http_error(self) -> None:
+        plan = self._plan("idem-retryable")
+
+        with patch.object(
+            executor_mod,
+            "_post_publish",
+            lambda _session, _plan: {"http_status": 429, "error": "rate limited"},
+        ):
+            result = execute_action(
+                session=None,
+                action_id="act_retryable",
+                plan=plan,
+                account_id="1708250765",
+                dry_run=False,
+            )
+
+        self.assertEqual(result["status"], "retry_scheduled")
+        self.assertEqual(store.get_action("act_retryable")["state"], "retry_scheduled")
+
+    def test_execute_action_marks_unknown_remote_state_on_timeout(self) -> None:
+        plan = self._plan("idem-timeout")
+
+        with patch.object(
+            executor_mod,
+            "_post_publish",
+            side_effect=TimeoutError("request timed out after send"),
+        ):
+            result = execute_action(
+                session=None,
+                action_id="act_timeout",
+                plan=plan,
+                account_id="1708250765",
+                dry_run=False,
+            )
+
+        self.assertEqual(result["status"], "unknown_remote_state")
+        self.assertEqual(store.get_action("act_timeout")["state"], "unknown_remote_state")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -12,7 +12,7 @@ from typing import Any
 from requests import Session
 
 from linkedin_cli.voyager import parse_json_response, voyager_get
-from linkedin_cli.write.store import get_action, update_state
+from linkedin_cli.write.store import ARTIFACTS_DIR, get_action, update_state, write_artifact
 
 
 def _normalize_for_compare(text: str) -> str:
@@ -160,3 +160,34 @@ def reconcile_profile_edit(
         "desired_value": desired_value,
         "reason": f"Profile {field} does not match desired value",
     }
+
+
+def reconcile_action(session: Session, action_id: str) -> dict[str, Any]:
+    """Dispatch reconciliation for a stored action and persist the evidence."""
+    action = get_action(action_id)
+    if action is None:
+        raise ValueError(f"Action not found: {action_id}")
+
+    plan = action.get("plan") or {}
+    action_type = action.get("action_type") or ""
+
+    if action_type in {"post.publish", "post.image_publish", "post.scheduled"}:
+        result = reconcile_post(session, action_id, plan)
+    elif action_type.startswith("profile.edit"):
+        result = reconcile_profile_edit(session, action_id, plan)
+    else:
+        result = {
+            "reconciled": False,
+            "reason": f"No reconciler is implemented for action type: {action_type}",
+        }
+
+    write_artifact(
+        action_id,
+        "reconcile",
+        {
+            "action_id": action_id,
+            "action_type": action_type,
+            "result": result,
+        },
+    )
+    return result

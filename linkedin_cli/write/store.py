@@ -10,11 +10,13 @@ import json
 import sqlite3
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Optional
 
 from linkedin_cli.config import CONFIG_DIR
 
 DB_PATH = CONFIG_DIR / "state.sqlite"
+ARTIFACTS_DIR = CONFIG_DIR / "artifacts"
 
 # Valid state transitions
 VALID_STATES = {
@@ -27,6 +29,7 @@ VALID_STATES = {
     "failed",
     "duplicate_skipped",
     "blocked",
+    "canceled",
 }
 
 
@@ -134,6 +137,7 @@ def create_action(
             ),
         )
         conn.commit()
+        write_artifact(action_id, "plan", plan)
         result = get_action(action_id, conn=conn)
         assert result is not None
         return result
@@ -216,6 +220,27 @@ def update_state(action_id: str, state: str, **kwargs: Any) -> dict[str, Any]:
         conn.close()
 
 
+def cancel_action(action_id: str, reason: str | None = None) -> dict[str, Any]:
+    """Cancel an action that has not reached a terminal remote-success state."""
+    action = get_action(action_id)
+    if action is None:
+        raise ValueError(f"Action not found: {action_id}")
+    if action["state"] in {"succeeded", "canceled"}:
+        return action
+    canceled = update_state(action_id, "canceled", last_error=reason)
+    write_artifact(
+        action_id,
+        "cancel",
+        {
+            "action_id": action_id,
+            "reason": reason,
+            "previous_state": action["state"],
+            "state": canceled["state"],
+        },
+    )
+    return canceled
+
+
 def record_attempt(
     action_id: str,
     attempt_no: int,
@@ -276,3 +301,33 @@ def list_actions(state: Optional[str] = None, limit: int = 20) -> list[dict[str,
         return results
     finally:
         conn.close()
+
+
+def artifact_dir(action_id: str) -> Path:
+    return ARTIFACTS_DIR / action_id
+
+
+def write_artifact(action_id: str, kind: str, payload: Any) -> Path:
+    """Persist a JSON artifact for an action and return its path."""
+    target_dir = artifact_dir(action_id)
+    target_dir.mkdir(parents=True, exist_ok=True)
+    path = target_dir / f"{kind}.json"
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    return path
+
+
+def list_artifacts(action_id: str) -> list[dict[str, Any]]:
+    """List JSON artifacts stored for an action."""
+    target_dir = artifact_dir(action_id)
+    if not target_dir.exists():
+        return []
+    artifacts: list[dict[str, Any]] = []
+    for path in sorted(target_dir.glob("*.json")):
+        artifacts.append(
+            {
+                "kind": path.stem,
+                "path": str(path),
+                "bytes": path.stat().st_size,
+            }
+        )
+    return artifacts

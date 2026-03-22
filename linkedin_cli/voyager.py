@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 from requests import Response, Session
 
 from linkedin_cli.config import DEFAULT_TIMEOUT
-from linkedin_cli.session import csrf_token_from_session, fail
+from linkedin_cli.session import ExitCode, csrf_token_from_session, fail
 
 
 def voyager_get(session: Session, path: str, params: dict[str, str] | None = None) -> Response:
@@ -40,9 +40,12 @@ def voyager_get(session: Session, path: str, params: dict[str, str] | None = Non
         timeout=DEFAULT_TIMEOUT,
     )
     if response.status_code == 401:
-        fail("LinkedIn session is unauthorized. Run `login` again.")
+        fail("LinkedIn session is unauthorized. Run `login` again.", code=ExitCode.AUTH)
     if response.status_code == 403:
-        fail("LinkedIn rejected the Voyager request (403). The session may need verification or LinkedIn blocked the endpoint.")
+        fail(
+            "LinkedIn rejected the Voyager request (403). The session may need verification or LinkedIn blocked the endpoint.",
+            code=ExitCode.AUTH,
+        )
     if response.status_code >= 400:
         snippet = response.text[:400].strip().replace("\n", " ") if response.text else ""
         fail(f"Voyager request failed with HTTP {response.status_code}: {snippet}")

@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import os
 from datetime import datetime, timezone
+from enum import IntEnum
 from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin
@@ -30,6 +31,17 @@ class CliError(SystemExit):
     def __init__(self, message: str, code: int = 1):
         super().__init__(code)
         self.message = message
+
+
+class ExitCode(IntEnum):
+    OK = 0
+    GENERAL = 1
+    USAGE = 2
+    AUTH = 3
+    VALIDATION = 4
+    NOT_FOUND = 5
+    CONFLICT = 6
+    RETRYABLE = 7
 
 
 def fail(message: str, code: int = 1) -> None:
@@ -74,7 +86,7 @@ def load_env_file(path: Path | None = None) -> None:
 def getenv_required(name: str) -> str:
     value = os.getenv(name, "").strip()
     if not value:
-        fail(f"Missing required environment variable: {name}")
+        fail(f"Missing required environment variable: {name}", code=ExitCode.VALIDATION)
     return value
 
 
@@ -116,7 +128,7 @@ def save_session(session: Session, meta: dict[str, Any] | None = None) -> None:
 def load_session(required: bool = True) -> tuple[Session | None, dict[str, Any]]:
     if not SESSION_FILE.exists():
         if required:
-            fail(f"No saved LinkedIn session at {SESSION_FILE}. Run `login` first.")
+            fail(f"No saved LinkedIn session at {SESSION_FILE}. Run `login` first.", code=ExitCode.AUTH)
         return None, {}
     try:
         data = json.loads(SESSION_FILE.read_text(encoding="utf-8"))

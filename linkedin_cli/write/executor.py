@@ -10,8 +10,10 @@ import fcntl
 import json
 import random
 import time
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
+import requests
 from requests import Session
 
 from linkedin_cli.config import CONFIG_DIR, DEFAULT_TIMEOUT, MOBILE_USER_AGENT
@@ -22,13 +24,39 @@ from linkedin_cli.write.store import (
     find_by_idempotency_key,
     get_action,
     init_db,
+    list_artifacts,
     record_attempt,
     update_state,
+    write_artifact,
 )
 
 
 LOCK_DIR = CONFIG_DIR / "locks"
 LOCK_FILE = LOCK_DIR / "account.lock"
+RETRYABLE_HTTP_STATUSES = {408, 425, 429, 500, 502, 503, 504}
+
+
+def _next_retry_timestamp(attempt_no: int) -> str:
+    minutes = [3, 12, 45][min(max(attempt_no - 1, 0), 2)]
+    return (datetime.now(timezone.utc) + timedelta(minutes=minutes)).isoformat()
+
+
+def _is_transport_uncertain(exc: Exception) -> bool:
+    if isinstance(exc, (TimeoutError, requests.Timeout)):
+        return True
+    message = str(exc).lower()
+    return "timed out" in message or "timeout" in message
+
+
+def _build_result(status: str, message: str, action_id: str, **extra: Any) -> dict[str, Any]:
+    payload = {
+        "status": status,
+        "message": message,
+        "action": get_action(action_id),
+        "artifacts": list_artifacts(action_id),
+    }
+    payload.update(extra)
+    return payload
 
 
 def _acquire_lock() -> Any:
@@ -142,11 +170,11 @@ def execute_action(
         )
 
     if dry_run:
-        return {
-            "status": "dry_run",
-            "message": "Action planned but not executed. Pass --execute for live.",
-            "action": action,
-        }
+        return _build_result(
+            "dry_run",
+            "Action planned but not executed. Pass --execute for live.",
+            action_id,
+        )
 
     # Acquire write lock for live execution
     lock_fh = _acquire_lock()
@@ -191,21 +219,47 @@ def execute_action(
                 result = _post_publish(session, plan)
             else:
                 update_state(action_id, "failed", last_error=f"Unknown action type: {action_type}")
-                return {"status": "failed", "message": f"Unknown action type: {action_type}", "action": get_action(action_id)}
+                return _build_result("failed", f"Unknown action type: {action_type}", action_id)
         except Exception as exc:
             error_msg = str(exc)
+            attempt_no = (action.get("attempt_count") or 0) + 1
             # 6. Record failed attempt
             record_attempt(
                 action_id=action_id,
-                attempt_no=(action.get("attempt_count") or 0) + 1,
+                attempt_no=attempt_no,
                 method=plan.get("live_request", {}).get("method", "POST"),
                 path=plan.get("live_request", {}).get("path", ""),
                 status=None,
                 outcome="transport_error",
                 error=error_msg,
             )
-            update_state(action_id, "failed", last_error=error_msg)
-            return {"status": "failed", "message": error_msg, "action": get_action(action_id)}
+            if _is_transport_uncertain(exc):
+                update_state(action_id, "unknown_remote_state", last_error=error_msg)
+                write_artifact(action_id, "last_result", {"status": "unknown_remote_state", "error": error_msg})
+                return _build_result(
+                    "unknown_remote_state",
+                    "Transport failed after request uncertainty. Reconcile before retrying.",
+                    action_id,
+                )
+
+            next_attempt_at = _next_retry_timestamp(attempt_no)
+            update_state(
+                action_id,
+                "retry_scheduled",
+                last_error=error_msg,
+                next_attempt_at=next_attempt_at,
+            )
+            write_artifact(
+                action_id,
+                "last_result",
+                {"status": "retry_scheduled", "error": error_msg, "next_attempt_at": next_attempt_at},
+            )
+            return _build_result(
+                "retry_scheduled",
+                error_msg,
+                action_id,
+                next_attempt_at=next_attempt_at,
+            )
 
         # 6. Record successful attempt
         http_status = result.get("http_status")
@@ -218,6 +272,7 @@ def execute_action(
             outcome="success" if (http_status and http_status < 400) else "http_error",
             error=result.get("error"),
         )
+        write_artifact(action_id, "last_result", result)
 
         # 7. Update state
         if http_status and http_status < 400:
@@ -226,24 +281,41 @@ def execute_action(
                 "succeeded",
                 remote_ref=result.get("remote_ref"),
             )
-            return {
-                "status": "succeeded",
-                "message": "Action executed successfully",
-                "result": result,
-                "action": get_action(action_id),
-            }
+            return _build_result(
+                "succeeded",
+                "Action executed successfully",
+                action_id,
+                result=result,
+            )
+
+        if http_status in RETRYABLE_HTTP_STATUSES:
+            next_attempt_at = _next_retry_timestamp((action.get("attempt_count") or 0) + 1)
+            update_state(
+                action_id,
+                "retry_scheduled",
+                last_error=result.get("error") or f"HTTP {http_status}",
+                next_attempt_at=next_attempt_at,
+            )
+            return _build_result(
+                "retry_scheduled",
+                result.get("error") or f"HTTP {http_status}",
+                action_id,
+                result=result,
+                next_attempt_at=next_attempt_at,
+            )
+
         else:
             update_state(
                 action_id,
                 "failed",
                 last_error=result.get("error") or f"HTTP {http_status}",
             )
-            return {
-                "status": "failed",
-                "message": result.get("error") or f"HTTP {http_status}",
-                "result": result,
-                "action": get_action(action_id),
-            }
+            return _build_result(
+                "failed",
+                result.get("error") or f"HTTP {http_status}",
+                action_id,
+                result=result,
+            )
     finally:
         _release_lock(lock_fh)
 

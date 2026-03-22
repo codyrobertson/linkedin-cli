@@ -4,15 +4,22 @@ Unofficial LinkedIn CLI using cookie-based session authentication. No official A
 
 Provides profile/company lookup, search, Voyager API access, and a safe write system with dry-run defaults for posting, messaging, profile editing, and more.
 
+It now also includes operator-oriented UX commands (`doctor`, shell completion, table/quiet output), richer action inspection/reconciliation, local workflow tools for saved searches, templates, and lightweight contact tracking, and a unified discovery queue that merges search, inbox, and engagement feedback with adaptive scoring.
+
 ## Install
 
 ```bash
-# From the repo root
-pip install .
+# From PyPI
+pipx install linkedin-discovery-cli
 
-# Or with pipx for isolated install
-pipx install .
+# Or with pip
+pip install linkedin-discovery-cli
+
+# Local development install from the repo root
+pip install -e .[dev]
 ```
+
+The published package name is `linkedin-discovery-cli`. The console command remains `linkedin`.
 
 ## Quick start
 
@@ -26,6 +33,9 @@ linkedin login
 
 # Check session status
 linkedin status
+
+# Run local diagnostics
+linkedin doctor
 
 # Look up a profile
 linkedin profile john-doe
@@ -56,6 +66,53 @@ linkedin dm send --to john-doe --message "Hey, let's connect"
 
 # List recent DM conversations
 linkedin dm list
+
+# Save and rerun a search locally
+linkedin workflow search save --name founders --kind people --query "fintech founder"
+linkedin workflow search run founders
+
+# Ingest people into the unified discovery queue
+linkedin discover ingest-search --kind people --query "fintech founder"
+linkedin discover ingest-inbox
+linkedin discover ingest-engagement --target openai
+linkedin discover queue --why
+
+# Save a reusable DM template
+linkedin workflow template save --name intro --kind dm --body "Hi {name}, enjoyed meeting you."
+
+# Track a contact locally
+linkedin workflow contact upsert --profile john-doe --name "John Doe" --stage qualified --tags lead,founder
+
+# Triage an inbox thread locally
+linkedin workflow inbox upsert --conversation urn:li:msg_conversation:123 --state follow_up --priority high
+
+# Feed public/manual engagement back into the queue
+linkedin discover signal add --profile john-doe --type commented --source public --notes "Asked about pricing"
+
+# Manually move a prospect through the queue
+linkedin discover state set john-doe --state engaged
+```
+
+## Output modes
+
+By default, commands render pretty JSON. Global flags can change the output shape:
+
+```bash
+linkedin --json action show act_123
+linkedin --table action list
+linkedin --quiet workflow contact list
+linkedin --brief voyager /voyager/api/me
+```
+
+## Operator UX
+
+```bash
+# Diagnose local config/session/db health
+linkedin doctor
+
+# Generate a basic completion script
+linkedin completion bash
+linkedin completion zsh
 ```
 
 ## Configuration
@@ -96,12 +153,15 @@ export LINKEDIN_CLI_HOME=/path/to/custom/config
 | `login` | Authenticate via web form flow |
 | `logout` | Remove saved session |
 | `status` | Inspect session health and account info |
+| `doctor` | Check local config, session, and SQLite state health |
+| `completion SHELL` | Print a basic bash/zsh completion script |
 | `html URL` | Fetch an authenticated LinkedIn URL |
 | `voyager PATH` | Call a Voyager API endpoint directly |
 | `profile TARGET` | Fetch and summarize a profile |
 | `company TARGET` | Fetch and summarize a company |
 | `search KIND QUERY` | Search people, companies, or posts |
 | `activity TARGET` | Find public posts for a person |
+| `discover ...` | Build and inspect the ranked prospect queue |
 | `snapshot` | Snapshot authenticated user profile |
 
 ### Write commands
@@ -125,6 +185,32 @@ All write commands default to **dry-run mode**. Pass `--execute` to actually per
 | `action list` | List recent actions from the store |
 | `action show ID` | Show details for a specific action |
 | `action retry ID` | Retry a failed action |
+| `action reconcile ID` | Re-check uncertain action state against LinkedIn |
+| `action cancel ID` | Cancel a pending/retryable action locally |
+| `action artifacts ID` | Show persisted action artifacts |
+
+### Workflow commands
+
+| Command | Description |
+|---------|-------------|
+| `workflow search save|list|run|delete` | Save and replay useful LinkedIn searches |
+| `workflow template save|list|show|render|delete` | Manage reusable DM/post templates |
+| `workflow contact upsert|list|show|delete` | Track local contact records and lead stages |
+| `workflow contact export|import` | Round-trip contacts as CSV |
+| `workflow inbox upsert|list|show|delete` | Track local inbox triage state for conversations |
+
+### Discovery commands
+
+| Command | Description |
+|---------|-------------|
+| `discover ingest-search` | Ingest people from a live query or saved search into the queue |
+| `discover ingest-inbox` | Ingest recent inbox participants into the queue |
+| `discover ingest-engagement` | Ingest public commenters and engagement from recent public posts |
+| `discover signal add` | Attach engagement feedback to a prospect |
+| `discover state set` | Update the queue state for a prospect |
+| `discover queue` | Show the ranked prospect queue |
+| `discover show` | Show one prospect with sources and signals |
+| `discover stats` | Show queue source/signal summary metrics |
 
 ## Write system
 
@@ -150,7 +236,11 @@ Actions are deduplicated by `(account_id, idempotency_key)`. If you run the same
 - **Jitter**: Random 2-5 second delay before live writes
 - **Warm-up GETs**: Session is refreshed with a read before any write
 - **Action store**: Full audit trail of every action, attempt, and state transition
+- **Artifacts**: Persisted plan/result/reconcile files for action inspection
 - **Idempotency**: Duplicate actions are detected and skipped
+- **Diagnostics**: `doctor` checks local config, session, and DB readiness
+- **Discovery queue**: Merge search, inbox, and engagement feedback into one ranked prospect list
+- **Adaptive learning**: Source and signal performance can influence future queue ranking
 - **Daily caps concept**: Architecture supports configurable daily limits (see `docs/architecture.md`)
 
 ## Running as a module
@@ -159,6 +249,18 @@ Actions are deduplicated by `(account_id, idempotency_key)`. If you run the same
 python -m linkedin_cli login
 python -m linkedin_cli status
 ```
+
+## Distribution
+
+Packaging and release automation live in:
+
+- `.github/workflows/ci.yml`
+- `.github/workflows/release.yml`
+- `.github/workflows/publish-pypi.yml`
+- `packaging/homebrew/linkedin-discovery-cli.rb`
+- `docs/distribution.md`
+
+The Homebrew formula in this repo is a starter template. Copy it into a dedicated tap repo after the first tagged release so you can replace the source archive SHA with the real PyPI sdist digest.
 
 ## DM Poller
 
