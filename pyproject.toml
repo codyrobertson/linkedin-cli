@@ -51,6 +51,7 @@ dev = [
 
 [project.scripts]
 linkedin = "linkedin_cli.cli:main"
+linkedin-mcp = "linkedin_cli.mcp_server:main"
 
 [project.urls]
 Homepage = "https://github.com/codyrobertson/linkedin-cli"

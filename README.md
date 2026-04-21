@@ -25,7 +25,7 @@ pip install playwright && python -m playwright install chromium firefox
 pip install -e .[qwen]
 ```
 
-The published package name is `linkedin-discovery-cli`. The console command remains `linkedin`.
+The published package name is `linkedin-discovery-cli`. The main console command remains `linkedin`; the MCP server entrypoint is `linkedin-mcp`.
 
 ## Quick start
 
@@ -122,7 +122,73 @@ linkedin discover signal add --profile john-doe --type commented --source public
 
 # Manually move a prospect through the queue
 linkedin discover state set john-doe --state engaged
+
+# Run the MCP server for agent tools
+linkedin-mcp
+
+# Run MCP with full live-write access for agents
+linkedin-mcp --enable-live-writes
 ```
+
+## MCP server for agents
+
+`linkedin-mcp` exposes the CLI as a stdio MCP server so agent clients can use
+the LinkedIn sandbox, session smoke tests, and, when explicitly enabled, live
+write tools.
+
+Default mode is safe for agent regression runs:
+
+```bash
+linkedin-mcp
+```
+
+It exposes local sandbox tools for publish/profile/experience/connect/follow/DM
+and comments, plus `linkedin_live_read_smoke` for a read-only saved-session
+check. Sandbox tools do not send traffic to LinkedIn.
+
+Full-access live mode is explicit:
+
+```bash
+linkedin-mcp --enable-live-writes
+```
+
+or:
+
+```bash
+LINKEDIN_MCP_ENABLE_LIVE_WRITES=1 linkedin-mcp
+```
+
+Live mode adds MCP tools for:
+
+- `linkedin_live_publish_post`
+- `linkedin_live_profile_edit`
+- `linkedin_live_experience_add`
+- `linkedin_live_connect`
+- `linkedin_live_follow`
+- `linkedin_live_send_dm`
+- `linkedin_live_comment`
+- `linkedin_live_action_health`
+- `linkedin_live_reconcile_action`
+
+These tools use the saved LinkedIn session, the normal action store, the
+single-write lock, idempotency records, retry/unknown-state handling, and local
+write guardrails. Most live write tools also accept `dry_run: true`.
+
+Example MCP client config:
+
+```json
+{
+  "mcpServers": {
+    "linkedin-live": {
+      "command": "linkedin-mcp",
+      "args": ["--enable-live-writes"]
+    }
+  }
+}
+```
+
+Use `--live-state-dir /path/to/state` if a particular agent deployment needs an
+isolated live action store instead of `~/.config/linkedin-cli/state.sqlite`.
 
 ## Output modes
 
@@ -235,6 +301,11 @@ export LINKEDIN_CLI_HOME=/path/to/custom/config
 | `LINKEDIN_PASSWORD` | For login | LinkedIn password |
 | `LINKEDIN_USER_AGENT` | No | Custom browser user agent |
 | `LINKEDIN_CLI_HOME` | No | Override config directory |
+| `LINKEDIN_MCP_ENABLE_LIVE_WRITES` | No | Expose full live-write tools from `linkedin-mcp` when set to `1`, `true`, `yes`, or `on` |
+| `LINKEDIN_WRITE_GUARDS` | No | Set to `0`/`false`/`off`/`no` to disable local write guardrails |
+| `LINKEDIN_WRITE_MAX_HOURLY` | No | Override live write hourly budget guard |
+| `LINKEDIN_WRITE_MAX_DAILY` | No | Override live write daily budget guard |
+| `LINKEDIN_WRITE_QUIET_HOURS` | No | Block live writes during a local time window such as `22:00-07:00` |
 | `BRAVE_EXECUTABLE_PATH` | No | Custom Brave executable path for `--browser-name brave` |
 
 ## Commands
