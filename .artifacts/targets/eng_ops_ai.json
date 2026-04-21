@@ -1,0 +1,8 @@
+{
+  "company": "AI Infra Co",
+  "buyer_roles": ["vp engineering", "platform engineering"],
+  "industries": ["ai", "cloud", "devtools"],
+  "problem_keywords": ["workflow", "orchestration", "agent", "infrastructure"],
+  "preferred_cta": ["soft_authority", "commercial"],
+  "tone_constraints": ["assertive"]
+}

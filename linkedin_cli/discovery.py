@@ -11,6 +11,7 @@ from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
+from linkedin_cli.voyager import parse_json_response, voyager_get
 from linkedin_cli.write import store
 
 
@@ -19,6 +20,7 @@ SOURCE_WEIGHTS = {
     "search.saved": 4.0,
     "inbox": 2.0,
     "public.engagement": 3.0,
+    "profile.views": 4.0,
     "workflow.contact": 2.0,
     "manual": 1.0,
 }
@@ -33,6 +35,7 @@ SIGNAL_WEIGHTS = {
     "profile_view": 4.0,
     "followed": 3.0,
     "liked": 2.0,
+    "reposted": 4.0,
     "outreach_sent": 2.0,
     "follow_up_sent": 3.0,
     "connection_requested": 1.0,
@@ -138,6 +141,18 @@ def _parse_json_ld_objects(html: str) -> list[Any]:
         else:
             objects.append(parsed)
     return objects
+
+
+def _view_text(value: Any) -> str | None:
+    if isinstance(value, str):
+        compact = " ".join(value.split()).strip()
+        return compact or None
+    if isinstance(value, dict):
+        for key in ("text", "accessibilityText", "displayName", "url"):
+            extracted = _view_text(value.get(key))
+            if extracted:
+                return extracted
+    return None
 
 
 def _metadata_json(metadata: dict[str, Any] | None) -> str:
@@ -459,6 +474,18 @@ def add_signal(
     finally:
         conn.close()
     _recalculate_scores(prospect_key)
+    try:
+        from linkedin_cli import traces
+
+        traces.attribute_prospect_signal(
+            profile_key=prospect_key,
+            signal_type=signal_type,
+            source=source,
+            metadata=metadata,
+            dedupe_key=dedupe_key,
+        )
+    except Exception:
+        pass
     return get_prospect(prospect_key) or {}
 
 
@@ -741,6 +768,147 @@ def _commenter_record(name: str, url: str | None, entity_type: str | None = None
     }
 
 
+PROFILE_VIEW_ANALYTICS_QUERY_ID = "voyagerPremiumDashAnalyticsView.ce06d2faf5a200e49defacd432aff6b8"
+PROFILE_VIEW_ANALYTICS_VARIABLES = "(analyticsEntityUrn:(activityUrn:urn%3Ali%3Adummy%3A-1),query:(),surfaceType:WVMP)"
+
+
+def fetch_profile_view_analytics(session: Any) -> dict[str, Any]:
+    path = (
+        "/voyager/api/graphql?includeWebMetadata=true&variables="
+        f"{PROFILE_VIEW_ANALYTICS_VARIABLES}&queryId={PROFILE_VIEW_ANALYTICS_QUERY_ID}"
+    )
+    response = voyager_get(session, path, referer="https://www.linkedin.com/me/profile-views")
+    return parse_json_response(response)
+
+
+def parse_profile_view_analytics_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    included = payload.get("included") or []
+    viewer_count = 0
+    view_title = None
+    profiles_by_urn: dict[str, dict[str, Any]] = {}
+    fallback_profiles: list[dict[str, Any]] = []
+
+    for item in included:
+        if not isinstance(item, dict):
+            continue
+        item_type = str(item.get("$type") or "")
+        if "edgeinsightsanalytics.Card" in item_type:
+            items = ((((item.get("component") or {}).get("summary") or {}).get("keyMetrics") or {}).get("items") or [])
+            for metric in items:
+                title_text = _view_text((metric or {}).get("title")) or ""
+                if title_text.isdigit():
+                    viewer_count = max(viewer_count, int(title_text))
+        elif "edgeinsightsanalytics.View" in item_type and not view_title:
+            view_title = _view_text(item.get("title"))
+        elif "Profile" in item_type:
+            display_name = " ".join(part for part in [str(item.get("firstName") or "").strip(), str(item.get("lastName") or "").strip()] if part).strip()
+            profile = {
+                "entity_urn": item.get("entityUrn"),
+                "display_name": display_name or _view_text(item.get("title")),
+                "public_identifier": item.get("publicIdentifier"),
+                "profile_url": _canonical_profile_url(item.get("navigationUrl")),
+                "headline": _view_text(item.get("headline")),
+            }
+            entity_urn = str(item.get("entityUrn") or "")
+            if entity_urn:
+                profiles_by_urn[entity_urn] = profile
+            if item.get("wvmpProfileActions") is not None:
+                fallback_profiles.append(profile)
+
+    viewers: list[dict[str, Any]] = []
+    seen_keys: set[str] = set()
+    for item in included:
+        if not isinstance(item, dict):
+            continue
+        item_type = str(item.get("$type") or "")
+        if "AnalyticsEntityLockup" not in item_type or item.get("blurred") is True:
+            continue
+        entity_lockup = item.get("entityLockup") or {}
+        action_data = entity_lockup.get("actionData") or {}
+        profile = profiles_by_urn.get(str(action_data.get("entityProfile") or ""))
+        profile_url = _canonical_profile_url(_view_text(entity_lockup.get("navigationUrl")) or (profile or {}).get("profile_url"))
+        public_identifier = (profile or {}).get("public_identifier") or _slug_from_url(profile_url)
+        display_name = _view_text(entity_lockup.get("title")) or (profile or {}).get("display_name")
+        if not display_name:
+            continue
+        viewer = {
+            "entity_urn": (profile or {}).get("entity_urn"),
+            "display_name": display_name,
+            "public_identifier": public_identifier,
+            "profile_url": profile_url,
+            "headline": _view_text(entity_lockup.get("subtitle")) or (profile or {}).get("headline"),
+        }
+        profile_key = public_identifier or resolve_profile_key(profile_url=profile_url, display_name=display_name) or _key_from_name(display_name)
+        viewer["profile_key"] = profile_key
+        if profile_key in seen_keys:
+            continue
+        seen_keys.add(profile_key)
+        viewers.append(viewer)
+
+    if not viewers:
+        for profile in fallback_profiles:
+            display_name = str(profile.get("display_name") or "").strip()
+            if not display_name:
+                continue
+            public_identifier = profile.get("public_identifier")
+            profile_url = _canonical_profile_url(profile.get("profile_url"))
+            profile_key = public_identifier or resolve_profile_key(profile_url=profile_url, display_name=display_name) or _key_from_name(display_name)
+            if profile_key in seen_keys:
+                continue
+            seen_keys.add(profile_key)
+            viewers.append({**profile, "profile_key": profile_key})
+
+    return {
+        "viewer_count": viewer_count,
+        "available_viewer_count": len(viewers),
+        "view_title": view_title,
+        "viewers": viewers,
+    }
+
+
+def ingest_profile_view_analytics(target_key: str, payload: dict[str, Any]) -> dict[str, Any]:
+    init_discovery_db()
+    parsed = parse_profile_view_analytics_payload(payload)
+    ingested_count = 0
+    for viewer in parsed["viewers"]:
+        profile_key = str(viewer.get("profile_key") or "")
+        display_name = str(viewer.get("display_name") or "").strip()
+        if not profile_key or not display_name:
+            continue
+        upsert_prospect(
+            profile_key=profile_key,
+            display_name=display_name,
+            public_identifier=viewer.get("public_identifier"),
+            member_urn=viewer.get("entity_urn"),
+            profile_url=viewer.get("profile_url"),
+            headline=viewer.get("headline"),
+            entity_type="person",
+        )
+        add_source(
+            profile_key,
+            source_type="profile.views",
+            source_value=target_key,
+            metadata={"viewer_count": parsed.get("viewer_count"), "view_title": parsed.get("view_title")},
+            dedupe_key=_dedupe_key("profile-view-source", profile_key, target_key, str(parsed.get("viewer_count") or 0)),
+        )
+        add_signal(
+            profile_key,
+            signal_type="profile_view",
+            source="analytics",
+            metadata={"target_key": target_key, "view_title": parsed.get("view_title")},
+            dedupe_key=_dedupe_key("profile-view", profile_key, target_key),
+        )
+        ingested_count += 1
+    return {
+        "target_key": target_key,
+        "viewer_count": parsed.get("viewer_count", 0),
+        "available_viewer_count": parsed.get("available_viewer_count", 0),
+        "ingested_count": ingested_count,
+        "view_title": parsed.get("view_title"),
+        "viewers": parsed.get("viewers", []),
+    }
+
+
 def ingest_public_post_engagement(target_key: str, post_url: str, html: str) -> dict[str, Any]:
     init_discovery_db()
     soup = BeautifulSoup(html, "html.parser")
@@ -790,6 +958,8 @@ def ingest_public_post_engagement(target_key: str, post_url: str, html: str) -> 
     )
 
     commenters: dict[str, dict[str, Any]] = {}
+    likers: dict[str, dict[str, Any]] = {}
+    reposters: dict[str, dict[str, Any]] = {}
     for comment in post_object.get("comment") or []:
         if not isinstance(comment, dict):
             continue
@@ -811,6 +981,22 @@ def ingest_public_post_engagement(target_key: str, post_url: str, html: str) -> 
             continue
         record = _commenter_record(name, href)
         commenters.setdefault(record["profile_key"], record)
+
+    for anchor in soup.select("a[data-tracking-control-name*=reaction_actor], a[data-tracking-control-name*=reactor], a[data-control-name*=reaction]"):
+        name = " ".join(anchor.get_text(" ", strip=True).split())
+        href = anchor.get("href")
+        if not name:
+            continue
+        record = _commenter_record(name, href)
+        likers.setdefault(record["profile_key"], record)
+
+    for anchor in soup.select("a[data-tracking-control-name*=repost_actor], a[data-control-name*=reshare], a[data-control-name*=repost]"):
+        name = " ".join(anchor.get_text(" ", strip=True).split())
+        href = anchor.get("href")
+        if not name:
+            continue
+        record = _commenter_record(name, href)
+        reposters.setdefault(record["profile_key"], record)
 
     for profile_key, commenter in commenters.items():
         upsert_prospect(
@@ -840,6 +1026,52 @@ def ingest_public_post_engagement(target_key: str, post_url: str, html: str) -> 
             dedupe_key=_dedupe_key("public-comment", profile_key, post_url),
         )
 
+    for profile_key, liker in likers.items():
+        upsert_prospect(
+            profile_key=profile_key,
+            display_name=liker["display_name"],
+            public_identifier=liker["public_identifier"],
+            profile_url=liker["profile_url"],
+            entity_type=liker["entity_type"],
+        )
+        add_source(
+            profile_key,
+            source_type="public.engagement",
+            source_value=post_url,
+            metadata={"target_key": target_key, "post_url": post_url, "engagement": "liked"},
+            dedupe_key=_dedupe_key("public-like-source", profile_key, post_url),
+        )
+        add_signal(
+            profile_key,
+            signal_type="liked",
+            source="public",
+            metadata={"target_key": target_key, "post_url": post_url},
+            dedupe_key=_dedupe_key("public-like", profile_key, post_url),
+        )
+
+    for profile_key, reposter in reposters.items():
+        upsert_prospect(
+            profile_key=profile_key,
+            display_name=reposter["display_name"],
+            public_identifier=reposter["public_identifier"],
+            profile_url=reposter["profile_url"],
+            entity_type=reposter["entity_type"],
+        )
+        add_source(
+            profile_key,
+            source_type="public.engagement",
+            source_value=post_url,
+            metadata={"target_key": target_key, "post_url": post_url, "engagement": "reposted"},
+            dedupe_key=_dedupe_key("public-repost-source", profile_key, post_url),
+        )
+        add_signal(
+            profile_key,
+            signal_type="reposted",
+            source="public",
+            metadata={"target_key": target_key, "post_url": post_url},
+            dedupe_key=_dedupe_key("public-repost", profile_key, post_url),
+        )
+
     return {
         "target_key": target_key,
         "post_key": post_key,
@@ -847,6 +1079,8 @@ def ingest_public_post_engagement(target_key: str, post_url: str, html: str) -> 
         "reaction_count": reaction_count,
         "comment_count": comment_count,
         "commenter_count": len(commenters),
+        "liker_count": len(likers),
+        "reposter_count": len(reposters),
     }
 
 

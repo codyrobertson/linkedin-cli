@@ -1,0 +1,12 @@
+{
+  "trained": false,
+  "model_name": "slice-cloud-b2b",
+  "scope": "all",
+  "sample_count": 95,
+  "min_samples": 150,
+  "industry": "cloud",
+  "topics": [
+    "b2b"
+  ],
+  "reason": "Not enough outcome-synced posts to train a model."
+}

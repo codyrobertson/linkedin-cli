@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-cloud-growth",
+  "scope": "all",
+  "industry": "cloud",
+  "topics": [
+    "growth"
+  ],
+  "sample_count": 338,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.9866,
+    "rmse": 2.6106,
+    "r2": 0.4149
+  },
+  "model": {
+    "model_name": "slice-cloud-growth",
+    "created_at": "2026-03-27T17:31:49.573355+00:00",
+    "updated_at": "2026-03-27T17:31:49.573355+00:00",
+    "scope": "all",
+    "sample_count": 338,
+    "intercept": 2.7685958951669978,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.6123343526319042,
+      0.062184310024545365,
+      0.48022510224230613,
+      1.5357069604975375,
+      2.40568034730732,
+      -0.7667324255268394,
+      -0.665793636308533,
+      1.124140745231577,
+      -0.48450835630487005,
+      0.0,
+      0.7377100447282917,
+      0.18191132078137529,
+      -1.4087173009118763,
+      3.001621678829031,
+      0.0,
+      -0.8728581578704613,
+      0.5169426714310241,
+      -0.25277779386187577,
+      -0.731898799552753,
+      0.28530156930072126,
+      0.0,
+      0.15654315780961148,
+      0.7854176026195462,
+      -1.104056810478438
+    ],
+    "metrics": {
+      "mae": 1.9866,
+      "r2": 0.4149,
+      "rmse": 2.6106
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "cloud",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.8584,
+      "topics": [
+        "growth"
+      ]
+    }
+  }
+}

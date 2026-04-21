@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-healthcare-infrastructure",
+  "scope": "all",
+  "industry": "healthcare",
+  "topics": [
+    "infrastructure"
+  ],
+  "sample_count": 170,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.9021,
+    "rmse": 2.3773,
+    "r2": 0.3265
+  },
+  "model": {
+    "model_name": "slice-healthcare-infrastructure",
+    "created_at": "2026-03-27T17:27:57.603738+00:00",
+    "updated_at": "2026-03-27T17:27:57.603738+00:00",
+    "scope": "all",
+    "sample_count": 170,
+    "intercept": 2.802782497607275,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.7473083811895822,
+      -0.340253827317098,
+      -0.0022920800502095775,
+      1.1461742584928474,
+      2.405439919329339,
+      -0.5515176368143907,
+      -0.7897373789028196,
+      1.2029606760731995,
+      -0.3078950062151528,
+      0.0,
+      -0.18053603779628058,
+      -0.1891270938978041,
+      -0.7561084469908219,
+      2.5235194140008437,
+      0.0,
+      -0.7124450016877915,
+      -0.4246714358082591,
+      0.5885359726513417,
+      0.896621264867307,
+      0.20003969525430257,
+      0.0,
+      -0.38242328175458007,
+      -0.5611672346218771,
+      -0.7016509085898583
+    ],
+    "metrics": {
+      "mae": 1.9021,
+      "r2": 0.3265,
+      "rmse": 2.3773
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "healthcare",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.7815,
+      "topics": [
+        "infrastructure"
+      ]
+    }
+  }
+}

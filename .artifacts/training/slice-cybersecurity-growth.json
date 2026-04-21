@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-cybersecurity-growth",
+  "scope": "all",
+  "industry": "cybersecurity",
+  "topics": [
+    "growth"
+  ],
+  "sample_count": 192,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.8538,
+    "rmse": 2.3026,
+    "r2": 0.3708
+  },
+  "model": {
+    "model_name": "slice-cybersecurity-growth",
+    "created_at": "2026-03-27T17:26:27.206831+00:00",
+    "updated_at": "2026-03-27T17:26:27.206831+00:00",
+    "scope": "all",
+    "sample_count": 192,
+    "intercept": 2.955676561414791,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      1.5798743743755927,
+      0.31390716530786694,
+      0.9027702712191106,
+      1.091962237546224,
+      2.522884574255314,
+      0.13882220599116712,
+      -1.2587649703729984,
+      1.1589774331831544,
+      -0.21428084110969953,
+      -0.0782831821322584,
+      -0.03405077007043071,
+      -0.32962397209308364,
+      -0.42960308116021056,
+      1.222182726215417,
+      0.0,
+      -1.071394919211824,
+      0.4672259091312439,
+      -0.15196116374094668,
+      0.5087296645240854,
+      0.3596606218077652,
+      0.0,
+      -0.8218231220231034,
+      -0.06066538698404238,
+      -0.7420319511462331
+    ],
+    "metrics": {
+      "mae": 1.8538,
+      "r2": 0.3708,
+      "rmse": 2.3026
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "cybersecurity",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 4.3311,
+      "topics": [
+        "growth"
+      ]
+    }
+  }
+}

@@ -34,6 +34,8 @@ PUBLIC_POST_HTML = textwrap.dedent(
       <body>
         <a href="https://www.linkedin.com/in/john-doe/?trk=public_post_comment_actor-name" data-tracking-control-name="public_post_comment_actor-name">John Doe</a>
         <a href="https://www.linkedin.com/company/acme/?trk=public_post_comment_actor-name" data-tracking-control-name="public_post_comment_actor-name">Acme Corp</a>
+        <a href="https://www.linkedin.com/in/jane-doe/?trk=reaction_actor" data-tracking-control-name="public_post_reaction_actor-name">Jane Doe</a>
+        <a href="https://www.linkedin.com/in/mark-doe/?trk=repost_actor" data-control-name="repost_actor">Mark Doe</a>
       </body>
     </html>
     """
@@ -66,8 +68,14 @@ class DiscoveryPublicEngagementTests(unittest.TestCase):
 
         queue = self.discovery.list_queue(limit=10)
         john = self.discovery.get_prospect("john-doe")
+        jane = self.discovery.get_prospect("jane-doe")
+        mark = self.discovery.get_prospect("mark-doe")
 
         self.assertEqual(summary["commenter_count"], 2)
+        self.assertEqual(summary["liker_count"], 1)
+        self.assertEqual(summary["reposter_count"], 1)
         self.assertEqual(summary["reaction_count"], 25)
         self.assertTrue(any(item["profile_key"] == "john-doe" for item in queue))
         self.assertEqual(john["signals"][0]["signal_type"], "commented")
+        self.assertEqual(jane["signals"][0]["signal_type"], "liked")
+        self.assertEqual(mark["signals"][0]["signal_type"], "reposted")

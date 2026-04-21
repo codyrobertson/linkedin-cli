@@ -111,13 +111,15 @@ def extract_new_messages(data, last_ts):
 def notify_discord(messages, webhook_url=None):
     """Send new DM notifications to Discord."""
     if not messages:
-        return
+        return {"attempted": 0, "delivered": 0, "failed": 0}
 
-    url = webhook_url or os.getenv("EMAIL_WEBHOOK_URL", "")
+    url = webhook_url or os.getenv(DEFAULT_WEBHOOK_ENV, "") or os.getenv("EMAIL_WEBHOOK_URL", "")
     if not url:
-        return
+        return {"attempted": 0, "delivered": 0, "failed": 0}
 
+    summary = {"attempted": 0, "delivered": 0, "failed": 0}
     for msg in messages[-5:]:  # Cap at 5 per poll
+        summary["attempted"] += 1
         content = (
             f"**New LinkedIn DM**\n"
             f"**From:** `{msg['sender_urn']}`\n"
@@ -138,7 +140,11 @@ def notify_discord(messages, webhook_url=None):
         try:
             urllib.request.urlopen(req, timeout=10)
         except Exception as e:
+            summary["failed"] += 1
             print(f"Discord notify failed: {e}", file=sys.stderr)
+        else:
+            summary["delivered"] += 1
+    return summary
 
 
 def check(quiet=False):
@@ -174,10 +180,10 @@ def check(quiet=False):
         save_state(state)
 
         # Notify Discord
-        notify_discord(new_msgs)
+        notify_summary = notify_discord(new_msgs)
 
         if not quiet:
-            print(json.dumps({"ok": True, "new_messages": len(new_msgs), "items": new_msgs}))
+            print(json.dumps({"ok": True, "new_messages": len(new_msgs), "items": new_msgs, "notify": notify_summary}))
     else:
         state["last_checked_at"] = datetime.now(timezone.utc).isoformat()
         save_state(state)

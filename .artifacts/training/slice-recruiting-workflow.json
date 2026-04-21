@@ -1,0 +1,12 @@
+{
+  "trained": false,
+  "model_name": "slice-recruiting-workflow",
+  "scope": "all",
+  "sample_count": 34,
+  "min_samples": 150,
+  "industry": "recruiting",
+  "topics": [
+    "workflow"
+  ],
+  "reason": "Not enough outcome-synced posts to train a model."
+}

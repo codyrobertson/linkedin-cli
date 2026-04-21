@@ -17,6 +17,8 @@ from linkedin_cli.config import CONFIG_DIR
 
 DB_PATH = CONFIG_DIR / "state.sqlite"
 ARTIFACTS_DIR = CONFIG_DIR / "artifacts"
+SQLITE_TIMEOUT_SECONDS = 120.0
+SQLITE_BUSY_TIMEOUT_MS = 120_000
 
 # Valid state transitions
 VALID_STATES = {
@@ -39,9 +41,11 @@ def _now_iso() -> str:
 
 def _connect() -> sqlite3.Connection:
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = sqlite3.connect(str(DB_PATH), timeout=SQLITE_TIMEOUT_SECONDS)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute(f"PRAGMA busy_timeout={SQLITE_BUSY_TIMEOUT_MS}")
+    conn.execute("PRAGMA synchronous=NORMAL")
     conn.execute("PRAGMA foreign_keys=ON")
     return conn
 
@@ -80,6 +84,9 @@ def init_db() -> None:
             CREATE INDEX IF NOT EXISTS idx_actions_created
                 ON actions(created_at);
 
+            CREATE INDEX IF NOT EXISTS idx_actions_account_updated
+                ON actions(account_id, updated_at);
+
             CREATE TABLE IF NOT EXISTS attempts (
                 attempt_id TEXT PRIMARY KEY,
                 action_id TEXT NOT NULL,
@@ -96,8 +103,107 @@ def init_db() -> None:
 
             CREATE INDEX IF NOT EXISTS idx_attempts_action
                 ON attempts(action_id);
+
+            CREATE TABLE IF NOT EXISTS telemetry_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                entity_kind TEXT NOT NULL,
+                entity_key TEXT NOT NULL,
+                event_type TEXT NOT NULL,
+                event_time TEXT NOT NULL,
+                source TEXT NOT NULL,
+                payload_json TEXT NOT NULL DEFAULT '{}',
+                dedupe_key TEXT UNIQUE
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_telemetry_events_time
+                ON telemetry_events(event_time DESC);
+
+            CREATE INDEX IF NOT EXISTS idx_telemetry_events_kind
+                ON telemetry_events(entity_kind, event_type);
         """)
         conn.commit()
+    finally:
+        conn.close()
+
+
+def append_telemetry_event(
+    entity_kind: str,
+    entity_key: str,
+    event_type: str,
+    dedupe_key: str | None,
+    payload: dict[str, Any] | None,
+    *,
+    source: str,
+    event_time: str | None = None,
+) -> dict[str, Any]:
+    now = event_time or _now_iso()
+    serialized = json.dumps(payload or {}, ensure_ascii=False, sort_keys=True)
+    conn = _connect()
+    try:
+        conn.execute(
+            """
+            INSERT INTO telemetry_events
+            (entity_kind, entity_key, event_type, event_time, source, payload_json, dedupe_key)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(dedupe_key) DO NOTHING
+            """,
+            (entity_kind, entity_key, event_type, now, source, serialized, dedupe_key),
+        )
+        conn.commit()
+        if dedupe_key:
+            row = conn.execute("SELECT * FROM telemetry_events WHERE dedupe_key = ?", (dedupe_key,)).fetchone()
+        else:
+            row = conn.execute("SELECT * FROM telemetry_events ORDER BY id DESC LIMIT 1").fetchone()
+        assert row is not None
+        result = dict(row)
+        result["payload"] = json.loads(result.pop("payload_json") or "{}")
+        return result
+    finally:
+        conn.close()
+
+
+def list_telemetry_events(limit: int = 100) -> list[dict[str, Any]]:
+    conn = _connect()
+    try:
+        rows = conn.execute(
+            "SELECT * FROM telemetry_events ORDER BY event_time DESC, id DESC LIMIT ?",
+            (max(1, int(limit)),),
+        ).fetchall()
+        events: list[dict[str, Any]] = []
+        for row in rows:
+            item = dict(row)
+            item["payload"] = json.loads(item.pop("payload_json") or "{}")
+            events.append(item)
+        return events
+    finally:
+        conn.close()
+
+
+def telemetry_stats() -> dict[str, Any]:
+    conn = _connect()
+    try:
+        event_count = int(conn.execute("SELECT COUNT(*) FROM telemetry_events").fetchone()[0] or 0)
+        rows = conn.execute(
+            """
+            SELECT entity_kind, event_type, COUNT(*) AS count
+            FROM telemetry_events
+            GROUP BY entity_kind, event_type
+            ORDER BY count DESC
+            """
+        ).fetchall()
+        by_event_type: dict[str, int] = {}
+        by_entity_kind: dict[str, int] = {}
+        for row in rows:
+            entity_kind = str(row["entity_kind"])
+            event_type = str(row["event_type"])
+            count = int(row["count"] or 0)
+            by_event_type[event_type] = by_event_type.get(event_type, 0) + count
+            by_entity_kind[entity_kind] = by_entity_kind.get(entity_kind, 0) + count
+        return {
+            "event_count": event_count,
+            "by_event_type": by_event_type,
+            "by_entity_kind": by_entity_kind,
+        }
     finally:
         conn.close()
 
@@ -200,13 +306,18 @@ def update_state(action_id: str, state: str, **kwargs: Any) -> dict[str, Any]:
     try:
         sets = ["state = ?", "updated_at = ?"]
         params: list[Any] = [state, _now_iso()]
-        for key in ("last_error", "remote_ref", "attempt_count", "next_attempt_at", "risk_flags"):
+        for key in ("last_error", "remote_ref", "attempt_count", "next_attempt_at", "risk_flags", "dry_run"):
             if key in kwargs:
                 sets.append(f"{key} = ?")
                 val = kwargs[key]
                 if key == "risk_flags" and isinstance(val, (list, dict)):
                     val = json.dumps(val)
+                elif key == "dry_run":
+                    val = 1 if bool(val) else 0
                 params.append(val)
+        if "plan" in kwargs:
+            sets.append("plan_json = ?")
+            params.append(json.dumps(kwargs["plan"], ensure_ascii=False))
         params.append(action_id)
         conn.execute(
             f"UPDATE actions SET {', '.join(sets)} WHERE action_id = ?",

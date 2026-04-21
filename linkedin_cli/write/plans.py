@@ -12,6 +12,9 @@ import uuid
 from typing import Any
 
 
+COMMENT_MUTATION_PATH = "/voyager/api/voyagerSocialDashNormComments?decorationId=com.linkedin.voyager.dash.deco.social.NormComment-43"
+
+
 def idempotency_key(*parts: str) -> str:
     """Compute sha256 idempotency key from ordered string parts."""
     canonical = "\n".join(parts)
@@ -126,11 +129,6 @@ def build_image_post_plan(
 
     idem_key = idempotency_key(account_id, "post.image_publish", normalized_text, image_path)
 
-    if account_id.startswith("urn:li:"):
-        author_urn = account_id
-    else:
-        author_urn = f"urn:li:person:{account_id}"
-
     plan = {
         "action_type": "post.image_publish",
         "account_id": account_id,
@@ -166,15 +164,18 @@ def build_image_post_plan(
                     "method": "POST",
                     "path": "/voyager/api/graphql?action=execute&queryId=voyagerContentcreationDashShares.279996efa5064c01775d5aff003d9377",
                     "body": {
-                        "author": author_urn,
-                        "lifecycleState": "PUBLISHED",
-                        "visibility": {
-                            "com.linkedin.ugc.MemberNetworkVisibility": li_visibility,
-                        },
-                        "specificContent": {
-                            "com.linkedin.ugc.ShareContent": {
-                                "shareCommentary": {"text": normalized_text},
-                                "shareMediaCategory": "IMAGE",
+                        "variables": {
+                            "post": {
+                                "allowedCommentersScope": "ALL",
+                                "intendedShareLifeCycleState": "PUBLISHED",
+                                "origin": "FEED",
+                                "visibilityDataUnion": {
+                                    "visibilityType": li_visibility,
+                                },
+                                "commentary": {
+                                    "text": normalized_text,
+                                    "attributesV2": [],
+                                },
                                 "media": [
                                     {
                                         "status": "READY",
@@ -183,6 +184,8 @@ def build_image_post_plan(
                                 ],
                             }
                         },
+                        "queryId": "voyagerContentcreationDashShares.279996efa5064c01775d5aff003d9377",
+                        "includeWebMetadata": True,
                     },
                 },
             ],
@@ -301,6 +304,22 @@ def build_experience_plan(
         raise ValueError("Job title cannot be empty")
     if not company:
         raise ValueError("Company name cannot be empty")
+    for label, month in (("start_month", start_month), ("end_month", end_month)):
+        if month is not None and not 1 <= int(month) <= 12:
+            raise ValueError(f"{label} must be between 1 and 12")
+    if start_month is not None and start_year is None:
+        raise ValueError("start_year is required when start_month is provided")
+    if end_month is not None and end_year is None:
+        raise ValueError("end_year is required when end_month is provided")
+    if start_year is not None and start_year < 1900:
+        raise ValueError("start_year must be 1900 or later")
+    if end_year is not None and end_year < 1900:
+        raise ValueError("end_year must be 1900 or later")
+    if start_year is not None and end_year is not None:
+        start_tuple = (start_year, start_month or 1)
+        end_tuple = (end_year, end_month or 12)
+        if end_tuple < start_tuple:
+            raise ValueError("Experience end date cannot be before the start date")
 
     idem_parts = [account_id, "experience.add", title, company]
     if start_year:
@@ -406,7 +425,10 @@ def build_connect_plan(
         "vanity_name": vanity_name,
     }
     if message:
-        desired["message"] = _normalize_text(message)
+        normalized_message = _normalize_text(message)
+        if normalized_message:
+            body["variables"]["message"] = normalized_message
+            desired["message"] = normalized_message
 
     plan = {
         "action_type": "connect",
@@ -495,6 +517,10 @@ def build_dm_plan(
                      Must be provided by the caller.
     """
     normalized_text = " ".join(message_text.strip().split())
+    if not normalized_text:
+        raise ValueError("DM message text cannot be empty")
+    if not conversation_urn and not recipient_urn:
+        raise ValueError("Either conversation_urn or recipient_urn is required")
 
     target_key = conversation_urn or recipient_urn or "unknown"
     key_input = f"{account_id}|dm.send|{target_key}|{normalized_text}"
@@ -533,9 +559,11 @@ def build_dm_plan(
         },
         "mailboxUrn": mailbox_urn,
         "trackingId": tracking_id,
-        "dedupeByClientGeneratedToken": False,
+        "dedupeByClientGeneratedToken": True,
         "hostRecipientUrns": host_recipient_urns,
     }
+    if conversation_urn:
+        body["conversationUrn"] = conversation_urn
 
     return {
         "action_type": "dm.send",
@@ -559,6 +587,64 @@ def build_dm_plan(
     }
 
 
+def build_comment_plan(
+    account_id: str,
+    post_url: str,
+    thread_urn: str,
+    text: str,
+    *,
+    delivery_mode: str = "post_thread_comment",
+    activity_urn: str | None = None,
+    source_comment_id: str | None = None,
+) -> dict[str, Any]:
+    """Build an action plan for posting a public comment or comment reply."""
+    normalized_text = " ".join(text.strip().split())
+    if not normalized_text:
+        raise ValueError("Comment text cannot be empty")
+    if not post_url:
+        raise ValueError("post_url is required for comment plans")
+    if not thread_urn:
+        raise ValueError("thread_urn is required for comment plans")
+
+    idem_key = idempotency_key(account_id, "comment.post", post_url, thread_urn, normalized_text)
+    body = {
+        "commentary": {
+            "text": normalized_text,
+            "attributesV2": [],
+            "$type": "com.linkedin.voyager.dash.common.text.TextViewModel",
+        },
+        "threadUrn": thread_urn,
+    }
+
+    return {
+        "action_type": "comment.post",
+        "account_id": account_id,
+        "idempotency_key": idem_key,
+        "target_key": f"comment.{thread_urn}",
+        "desired": {
+            "post_url": post_url,
+            "thread_urn": thread_urn,
+            "text": normalized_text,
+            "delivery_mode": delivery_mode,
+            "activity_urn": activity_urn,
+            "source_comment_id": source_comment_id,
+        },
+        "live_request": {
+            "method": "POST",
+            "path": COMMENT_MUTATION_PATH,
+            "body": body,
+            "post_url": post_url,
+            "activity_urn": activity_urn,
+            "thread_urn": thread_urn,
+            "delivery_mode": delivery_mode,
+        },
+        "reconcile": {
+            "strategy": "comment_text_match",
+            "window_minutes": 10,
+        },
+    }
+
+
 def build_scheduled_post_plan(
     account_id: str,
     text: str,
@@ -568,26 +654,16 @@ def build_scheduled_post_plan(
 ) -> dict[str, Any]:
     """Build an action plan for a scheduled LinkedIn post."""
     normalized_text = " ".join(text.strip().split())
+    if not normalized_text:
+        raise ValueError("Scheduled post text cannot be empty")
+    if image_path:
+        raise ValueError("Scheduled image posts are not supported; use post publish --image for immediate image publishing")
     key_input = f"{account_id}|post.scheduled|{normalized_text}|{visibility}|{scheduled_at}"
     idem_key = hashlib.sha256(key_input.encode()).hexdigest()
 
     vis_map = {
         "anyone": "ANYONE",
         "connections": "CONNECTIONS",
-    }
-
-    body = {
-        "author": f"urn:li:person:{account_id}",
-        "lifecycleState": "PUBLISHED",
-        "visibility": {
-            "com.linkedin.ugc.MemberNetworkVisibility": vis_map.get(visibility, "PUBLIC"),
-        },
-        "specificContent": {
-            "com.linkedin.ugc.ShareContent": {
-                "shareCommentary": {"text": text.strip()},
-                "shareMediaCategory": "NONE",
-            }
-        },
     }
 
     return {

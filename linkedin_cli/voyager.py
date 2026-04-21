@@ -17,7 +17,13 @@ from linkedin_cli.config import DEFAULT_TIMEOUT
 from linkedin_cli.session import ExitCode, csrf_token_from_session, fail
 
 
-def voyager_get(session: Session, path: str, params: dict[str, str] | None = None) -> Response:
+def voyager_get(
+    session: Session,
+    path: str,
+    params: dict[str, str] | None = None,
+    *,
+    referer: str = "https://www.linkedin.com/feed/",
+) -> Response:
     if not path.startswith("/"):
         path = "/" + path
     if not path.startswith("/voyager/api/"):
@@ -29,7 +35,7 @@ def voyager_get(session: Session, path: str, params: dict[str, str] | None = Non
     headers = {
         "Accept": "application/vnd.linkedin.normalized+json+2.1",
         "X-RestLi-Protocol-Version": "2.0.0",
-        "Referer": "https://www.linkedin.com/feed/",
+        "Referer": referer,
     }
     if csrf:
         headers["csrf-token"] = csrf
@@ -38,7 +44,15 @@ def voyager_get(session: Session, path: str, params: dict[str, str] | None = Non
         params=params or {},
         headers=headers,
         timeout=DEFAULT_TIMEOUT,
+        allow_redirects=False,
     )
+    if 300 <= response.status_code < 400:
+        location = response.headers.get("location") or response.headers.get("Location") or ""
+        fail(
+            "LinkedIn redirected the Voyager request instead of returning API data. "
+            f"The saved session is likely expired or needs browser verification. Location: {location}",
+            code=ExitCode.AUTH,
+        )
     if response.status_code == 401:
         fail("LinkedIn session is unauthorized. Run `login` again.", code=ExitCode.AUTH)
     if response.status_code == 403:

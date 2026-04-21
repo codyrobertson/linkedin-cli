@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-marketing-infrastructure",
+  "scope": "all",
+  "industry": "marketing",
+  "topics": [
+    "infrastructure"
+  ],
+  "sample_count": 1036,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 2.1384,
+    "rmse": 2.7068,
+    "r2": 0.3551
+  },
+  "model": {
+    "model_name": "slice-marketing-infrastructure",
+    "created_at": "2026-03-27T17:30:05.272653+00:00",
+    "updated_at": "2026-03-27T17:30:05.272653+00:00",
+    "scope": "all",
+    "sample_count": 1036,
+    "intercept": 2.4266825489638144,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.892912713360283,
+      -0.16355576616369097,
+      0.7601312561933651,
+      0.4643903711214974,
+      2.361073944917167,
+      -0.2172488175241635,
+      -0.5562804632333849,
+      1.6953698177827148,
+      -0.008980433339438381,
+      -0.022943044813237643,
+      0.12189672096137424,
+      0.8722877673073913,
+      -1.503527405778618,
+      2.2906238071799807,
+      0.0,
+      -0.4289660460814094,
+      -0.1777589807765259,
+      -0.28670654282156416,
+      -0.3501354439722169,
+      0.1999502987705996,
+      -0.06356866856806716,
+      -0.4393687143645749,
+      0.1633352163011851,
+      -0.40364425784642527
+    ],
+    "metrics": {
+      "mae": 2.1384,
+      "r2": 0.3551,
+      "rmse": 2.7068
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "marketing",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.9803,
+      "topics": [
+        "infrastructure"
+      ]
+    }
+  }
+}

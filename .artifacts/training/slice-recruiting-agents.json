@@ -1,0 +1,12 @@
+{
+  "trained": false,
+  "model_name": "slice-recruiting-agents",
+  "scope": "all",
+  "sample_count": 39,
+  "min_samples": 150,
+  "industry": "recruiting",
+  "topics": [
+    "agents"
+  ],
+  "reason": "Not enough outcome-synced posts to train a model."
+}

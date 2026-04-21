@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-cybersecurity-automation",
+  "scope": "all",
+  "industry": "cybersecurity",
+  "topics": [
+    "automation"
+  ],
+  "sample_count": 266,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.8683,
+    "rmse": 2.4267,
+    "r2": 0.2401
+  },
+  "model": {
+    "model_name": "slice-cybersecurity-automation",
+    "created_at": "2026-03-27T17:26:06.716372+00:00",
+    "updated_at": "2026-03-27T17:26:06.716372+00:00",
+    "scope": "all",
+    "sample_count": 266,
+    "intercept": 2.2575234203700028,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.8406231853541294,
+      -0.5603371325912391,
+      0.5137380331412259,
+      0.8902059283925854,
+      2.0267095897339997,
+      -0.09521101055071571,
+      0.5142087003006599,
+      1.0532315698721049,
+      0.3908229775464679,
+      0.0,
+      0.2313072184394217,
+      -0.42279718329104915,
+      -0.059773948222258226,
+      1.423798352922385,
+      0.0,
+      -0.6302817837137743,
+      -0.0019015651745911053,
+      0.014780231233987267,
+      -0.4433912428371302,
+      -0.17360704429656473,
+      0.0,
+      -0.14318257531932152,
+      -0.050502154910298275,
+      0.19327989970893622
+    ],
+    "metrics": {
+      "mae": 1.8683,
+      "r2": 0.2401,
+      "rmse": 2.4267
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "cybersecurity",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.4251,
+      "topics": [
+        "automation"
+      ]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "trained": false,
+  "model_name": "slice-recruiting-enterprise",
+  "scope": "all",
+  "sample_count": 47,
+  "min_samples": 150,
+  "industry": "recruiting",
+  "topics": [
+    "enterprise"
+  ],
+  "reason": "Not enough outcome-synced posts to train a model."
+}

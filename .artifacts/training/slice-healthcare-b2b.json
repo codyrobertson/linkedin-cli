@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-healthcare-b2b",
+  "scope": "all",
+  "industry": "healthcare",
+  "topics": [
+    "b2b"
+  ],
+  "sample_count": 659,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.8598,
+    "rmse": 2.3773,
+    "r2": 0.2672
+  },
+  "model": {
+    "model_name": "slice-healthcare-b2b",
+    "created_at": "2026-03-27T17:27:49.835995+00:00",
+    "updated_at": "2026-03-27T17:27:49.835995+00:00",
+    "scope": "all",
+    "sample_count": 659,
+    "intercept": 2.287950488477227,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.14697966977527194,
+      -0.183192279435612,
+      0.3789682254057839,
+      1.1671700257986883,
+      2.4467768904269254,
+      -0.21996911498196928,
+      -0.5941915088777892,
+      0.8988424767473246,
+      -0.013692025213272558,
+      -0.015578486072139597,
+      -0.2444939856208658,
+      0.3855032713408353,
+      -0.8587284255680151,
+      1.2882577227842553,
+      0.0,
+      -0.10692857630370302,
+      -0.08405309609509339,
+      -0.4206715599267036,
+      -0.22113699335589992,
+      0.2199327138605049,
+      -0.022142078775741213,
+      -0.41354821249045015,
+      -0.3823799834395859,
+      0.20762132187567303
+    ],
+    "metrics": {
+      "mae": 1.8598,
+      "r2": 0.2672,
+      "rmse": 2.3773
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "healthcare",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.3694,
+      "topics": [
+        "b2b"
+      ]
+    }
+  }
+}

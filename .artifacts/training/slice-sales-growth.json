@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-sales-growth",
+  "scope": "all",
+  "industry": "sales",
+  "topics": [
+    "growth"
+  ],
+  "sample_count": 482,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 2.1851,
+    "rmse": 2.7897,
+    "r2": 0.2786
+  },
+  "model": {
+    "model_name": "slice-sales-growth",
+    "created_at": "2026-03-27T17:28:29.923135+00:00",
+    "updated_at": "2026-03-27T17:28:29.923135+00:00",
+    "scope": "all",
+    "sample_count": 482,
+    "intercept": 2.9129806379282277,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.6639990137241876,
+      0.05995951311171878,
+      -0.09753454515679301,
+      0.7086348683784978,
+      2.4125498117737756,
+      -0.5883819375491075,
+      -0.391245811903351,
+      0.13370043236291485,
+      0.5125164587451615,
+      -0.2209601770423019,
+      1.1588858765715573,
+      -0.3343114716375735,
+      -1.2532357581500204,
+      1.4030110634920698,
+      0.0,
+      -0.747290271756792,
+      0.24224753362020568,
+      -0.28848236585894244,
+      -0.5401031320624904,
+      -0.12730667076262323,
+      0.015266605156513714,
+      -0.6358940611138572,
+      0.2904855823271565,
+      0.2040265724597717
+    ],
+    "metrics": {
+      "mae": 2.1851,
+      "r2": 0.2786,
+      "rmse": 2.7897
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "sales",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 4.3361,
+      "topics": [
+        "growth"
+      ]
+    }
+  }
+}

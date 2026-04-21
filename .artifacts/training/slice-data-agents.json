@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-data-agents",
+  "scope": "all",
+  "industry": "data",
+  "topics": [
+    "agents"
+  ],
+  "sample_count": 319,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 2.3597,
+    "rmse": 3.0701,
+    "r2": 0.2798
+  },
+  "model": {
+    "model_name": "slice-data-agents",
+    "created_at": "2026-03-27T17:32:22.058144+00:00",
+    "updated_at": "2026-03-27T17:32:22.058144+00:00",
+    "scope": "all",
+    "sample_count": 319,
+    "intercept": 3.3159592318429496,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      1.4905668301925363,
+      -0.13885051331032827,
+      1.2264531339120859,
+      0.2244647999464584,
+      2.5910801799541336,
+      -0.003836489278817358,
+      -0.07625763003311976,
+      1.0818631886792076,
+      0.05932612403330687,
+      0.0,
+      -0.32542648244592387,
+      -0.327229605931204,
+      -0.989770258312919,
+      2.0385632988018267,
+      0.0,
+      -0.6191045071847725,
+      -0.31955954074076776,
+      0.2698153156614205,
+      0.03585811646540232,
+      0.597588824015232,
+      -0.30262232039244963,
+      -1.1330473945260169,
+      0.6614746773566715,
+      -0.5281006351829605
+    ],
+    "metrics": {
+      "mae": 2.3597,
+      "r2": 0.2798,
+      "rmse": 3.0701
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "data",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 4.5328,
+      "topics": [
+        "agents"
+      ]
+    }
+  }
+}

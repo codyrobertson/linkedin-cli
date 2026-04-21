@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-healthcare-growth",
+  "scope": "all",
+  "industry": "healthcare",
+  "topics": [
+    "growth"
+  ],
+  "sample_count": 799,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.8789,
+    "rmse": 2.3442,
+    "r2": 0.3416
+  },
+  "model": {
+    "model_name": "slice-healthcare-growth",
+    "created_at": "2026-03-27T17:27:28.680486+00:00",
+    "updated_at": "2026-03-27T17:27:28.680486+00:00",
+    "scope": "all",
+    "sample_count": 799,
+    "intercept": 2.477762059381793,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.60429221857061,
+      -0.12078874173675294,
+      0.2432767704118304,
+      0.7957674639175207,
+      2.495186441693933,
+      -0.8949054688615453,
+      -0.6163365553168056,
+      1.3114770794414041,
+      -0.23953828470125796,
+      -0.05918103511466608,
+      -0.1768815392215894,
+      0.06892371355446882,
+      -0.8083820314431436,
+      2.4439104952884767,
+      0.0,
+      -0.7294384999399103,
+      0.12736200062046996,
+      -0.041754420733977886,
+      0.27378547774563466,
+      0.12943815452160556,
+      -0.12876908979035723,
+      -0.8365044950002446,
+      0.28027867870192297,
+      -0.3620596462319801
+    ],
+    "metrics": {
+      "mae": 1.8789,
+      "r2": 0.3416,
+      "rmse": 2.3442
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "healthcare",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.6203,
+      "topics": [
+        "growth"
+      ]
+    }
+  }
+}

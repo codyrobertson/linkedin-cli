@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-cybersecurity-agents",
+  "scope": "all",
+  "industry": "cybersecurity",
+  "topics": [
+    "agents"
+  ],
+  "sample_count": 526,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 2.1421,
+    "rmse": 2.6821,
+    "r2": 0.2665
+  },
+  "model": {
+    "model_name": "slice-cybersecurity-agents",
+    "created_at": "2026-03-27T17:25:56.450354+00:00",
+    "updated_at": "2026-03-27T17:25:56.450354+00:00",
+    "scope": "all",
+    "sample_count": 526,
+    "intercept": 2.2917202816560187,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.5057543727169441,
+      0.04426642378206229,
+      0.12048067209500095,
+      0.734108053332874,
+      2.2800229858710446,
+      -0.2662027305273874,
+      -0.6281109639703187,
+      0.8434563910927994,
+      0.4070939972251037,
+      -0.09863431183066657,
+      0.3294891259856766,
+      0.2914248595576107,
+      -0.417914376592685,
+      2.4310034627205814,
+      -0.17655256474831282,
+      -0.5017378267174117,
+      -0.293875285924959,
+      0.058029537411819654,
+      -0.7691383488036718,
+      0.8239407641058247,
+      -0.1097774031903559,
+      -0.6132306444853721,
+      0.21235164222587966,
+      -0.4582821498311698
+    ],
+    "metrics": {
+      "mae": 2.1421,
+      "r2": 0.2665,
+      "rmse": 2.6821
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "cybersecurity",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.9354,
+      "topics": [
+        "agents"
+      ]
+    }
+  }
+}

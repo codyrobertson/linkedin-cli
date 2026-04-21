@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-sales-b2b",
+  "scope": "all",
+  "industry": "sales",
+  "topics": [
+    "b2b"
+  ],
+  "sample_count": 362,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 2.2936,
+    "rmse": 2.9475,
+    "r2": 0.3068
+  },
+  "model": {
+    "model_name": "slice-sales-b2b",
+    "created_at": "2026-03-27T17:28:49.480188+00:00",
+    "updated_at": "2026-03-27T17:28:49.480188+00:00",
+    "scope": "all",
+    "sample_count": 362,
+    "intercept": 3.468444679377581,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.6678526153040981,
+      -0.3918257745895956,
+      0.16063359364791358,
+      0.5522405819034384,
+      2.8710276329272006,
+      -0.10303430854488521,
+      0.24577238450058703,
+      0.7267513372793484,
+      1.0169124336155722,
+      -0.2247268954323764,
+      0.887081969222429,
+      0.21116846055916844,
+      -1.954169383349121,
+      0.5140045243261099,
+      0.0,
+      -0.8798843896071065,
+      0.8162286694862644,
+      -0.38768635752846026,
+      -0.42102750335013145,
+      0.3252748807066123,
+      0.0382475669526338,
+      0.1251351245813885,
+      -0.33975529104459856,
+      -0.17921685549520744
+    ],
+    "metrics": {
+      "mae": 2.2936,
+      "r2": 0.3068,
+      "rmse": 2.9475
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "sales",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 4.297,
+      "topics": [
+        "b2b"
+      ]
+    }
+  }
+}

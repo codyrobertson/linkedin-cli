@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-cybersecurity-enterprise",
+  "scope": "all",
+  "industry": "cybersecurity",
+  "topics": [
+    "enterprise"
+  ],
+  "sample_count": 767,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.9479,
+    "rmse": 2.4842,
+    "r2": 0.3187
+  },
+  "model": {
+    "model_name": "slice-cybersecurity-enterprise",
+    "created_at": "2026-03-27T17:26:37.262615+00:00",
+    "updated_at": "2026-03-27T17:26:37.262615+00:00",
+    "scope": "all",
+    "sample_count": 767,
+    "intercept": 2.5575146142636256,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.5437126485800928,
+      0.1055831373952516,
+      0.7837494785642524,
+      1.0923676540634282,
+      2.8325866989064106,
+      -0.5445055014831673,
+      -0.7734188992015105,
+      1.224963322105483,
+      0.6541496569297025,
+      -0.044010423339565834,
+      -0.31736361498351245,
+      -0.3190644627464045,
+      -0.5862537935947083,
+      1.3302100322249997,
+      0.0,
+      -0.5541701920580877,
+      -0.17738774409383357,
+      -0.01861550119219902,
+      -0.4857453655250634,
+      0.40430443986857895,
+      0.008154168049192492,
+      -0.2879347951947281,
+      -0.08662346970168765,
+      -0.3023284148404127
+    ],
+    "metrics": {
+      "mae": 1.9479,
+      "r2": 0.3187,
+      "rmse": 2.4842
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "cybersecurity",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.9166,
+      "topics": [
+        "enterprise"
+      ]
+    }
+  }
+}

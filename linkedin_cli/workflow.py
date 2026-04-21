@@ -231,6 +231,69 @@ def upsert_contact(
         conn.close()
 
 
+def _stage_from_discovery_state(state: str | None) -> str:
+    if state in {"engaged"}:
+        return "qualified"
+    if state in {"won"}:
+        return "won"
+    if state in {"contacted", "waiting", "watch"}:
+        return "active"
+    if state in {"cold", "do_not_contact"}:
+        return "archived"
+    return "new"
+
+
+def sync_contacts_from_queue(prospects: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    synced: list[dict[str, Any]] = []
+    for prospect in prospects:
+        if prospect.get("entity_type") not in {None, "person"}:
+            continue
+        profile_key = str(prospect.get("public_identifier") or prospect.get("profile_key") or "").strip()
+        display_name = str(prospect.get("display_name") or profile_key).strip()
+        if not profile_key or not display_name:
+            continue
+        tags: list[str] = []
+        if prospect.get("company"):
+            tags.append(str(prospect["company"]))
+        if prospect.get("state"):
+            tags.append(f"queue:{prospect['state']}")
+        score = prospect.get("score")
+        notes = f"Discovery sync score={round(float(score or 0.0), 4)}"
+        synced.append(
+            upsert_contact(
+                profile_key=profile_key,
+                display_name=display_name,
+                stage=_stage_from_discovery_state(prospect.get("state")),
+                tags=tags,
+                notes=notes,
+            )
+        )
+    return synced
+
+
+def sync_contacts_from_search_results(results: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    synced: list[dict[str, Any]] = []
+    for result in results:
+        url = str(result.get("url") or "")
+        if "/in/" not in url:
+            continue
+        slug = url.rstrip("/").split("/in/")[-1].split("/", 1)[0]
+        display_name = str((result.get("title") or "").split(" - ")[0].strip() or slug).strip()
+        if not slug or not display_name:
+            continue
+        notes = str(result.get("snippet") or "")
+        synced.append(
+            upsert_contact(
+                profile_key=slug,
+                display_name=display_name,
+                stage="new",
+                tags=["search"],
+                notes=notes,
+            )
+        )
+    return synced
+
+
 def list_contacts(stage: str | None = None, tag: str | None = None) -> list[dict[str, Any]]:
     conn = store._connect()
     try:

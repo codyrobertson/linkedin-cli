@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from datetime import datetime, timezone
 from enum import IntEnum
 from pathlib import Path
@@ -112,7 +113,11 @@ def now_iso() -> str:
 
 
 def ensure_session_dir() -> None:
-    SESSION_DIR.mkdir(parents=True, exist_ok=True)
+    SESSION_DIR.mkdir(parents=True, exist_ok=True, mode=0o700)
+    try:
+        SESSION_DIR.chmod(0o700)
+    except OSError:
+        pass
 
 
 def save_session(session: Session, meta: dict[str, Any] | None = None) -> None:
@@ -123,6 +128,10 @@ def save_session(session: Session, meta: dict[str, Any] | None = None) -> None:
         "meta": meta or {},
     }
     SESSION_FILE.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    try:
+        SESSION_FILE.chmod(0o600)
+    except OSError:
+        pass
 
 
 def load_session(required: bool = True) -> tuple[Session | None, dict[str, Any]]:
@@ -284,3 +293,109 @@ def linkedin_login(session: Session, username: str, password: str) -> dict[str, 
         timeout=DEFAULT_TIMEOUT,
     )
     return login_result(session, response)
+
+
+def _infer_browser_launcher(browser_name: str) -> tuple[Any, dict[str, Any]]:
+    browser_name = browser_name.strip().lower()
+    if browser_name in {"chrome", "chromium"}:
+        return "chromium", {}
+    if browser_name == "brave":
+        return "chromium", {
+            "executable_path": os.environ.get(
+                "BRAVE_EXECUTABLE_PATH",
+                "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
+            )
+        }
+    if browser_name == "firefox":
+        return "firefox", {}
+    # This branch validates user input from argparse first.
+    raise ValueError(f"Unsupported browser: {browser_name}")
+
+
+def _resolve_cookie_payload(browser_cookies: list[dict[str, Any]]) -> dict[str, str]:
+    cookies: dict[str, str] = {}
+    for cookie in browser_cookies:
+        name = cookie.get("name")
+        value = cookie.get("value")
+        domain = cookie.get("domain", "")
+        if not isinstance(name, str) or not isinstance(value, str):
+            continue
+        if "linkedin.com" not in domain:
+            continue
+        cookies[name] = value
+    return cookies
+
+
+def import_browser_session(
+    browser_name: str,
+    timeout: int = 300,
+    user_agent: str | None = None,
+) -> tuple[Session, dict[str, Any]]:
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError as exc:
+        raise CliError(
+            "Browser login requires playwright. Install it with: pip install playwright && python -m playwright install chromium firefox",
+            code=ExitCode.GENERAL,
+        ) from exc
+
+    key, extra_launch_kwargs = _infer_browser_launcher(browser_name)
+    _timeout = int(timeout)
+    if _timeout <= 0:
+        fail("Browser login timeout must be greater than zero", code=ExitCode.VALIDATION)
+    launch_kwargs: dict[str, Any] = {"headless": False, "timeout": _timeout * 1000}
+    launch_kwargs.update(extra_launch_kwargs)
+
+    print(
+        "Open the LinkedIn login flow in the browser. The command will finish when it detects an active li_at cookie "
+        f"(timeout: {_timeout}s).",
+        flush=True,
+    )
+    print("If already logged in, navigate to your LinkedIn home page to finish.", flush=True)
+
+    with sync_playwright() as playwright:
+        browser_type = getattr(playwright, key, None)
+        if browser_type is None:
+            fail(f"Unsupported browser launch target: {key}")
+        try:
+            browser = browser_type.launch(**launch_kwargs)
+        except Exception as exc:
+            raise CliError(
+                f"Failed to launch {browser_name} for cookie capture. "
+                "Make sure the browser is installed and available on your machine.",
+                code=ExitCode.GENERAL,
+            ) from exc
+        context = browser.new_context(user_agent=user_agent)
+        page = context.new_page()
+        page.goto("https://www.linkedin.com/feed/")
+
+        deadline = time.time() + _timeout
+        while time.time() < deadline:
+            is_connected = getattr(browser, "is_connected", None)
+            if callable(is_connected) and not is_connected():
+                fail("Browser closed before LinkedIn login completed", code=ExitCode.AUTH)
+            cookies = context.cookies()
+            cookie_map = _resolve_cookie_payload(cookies)
+            if cookie_map.get("li_at"):
+                session = build_session(user_agent)
+                session.cookies = cookiejar_from_dict(cookie_map)
+                if not csrf_token_from_session(session):
+                    # Preserve existing request behavior while allowing manual cookie capture.
+                    session.cookies.set("JSESSIONID", cookie_map.get("JSESSIONID", ""))
+                captured = context.storage_state()
+                browser.close()
+                return session, {
+                    "source": "browser_import",
+                    "browser_name": browser_name,
+                    "captured_count": len(cookie_map),
+                    "captured_at": now_iso(),
+                    "storage_state": captured.get("origins", []),
+                }
+            time.sleep(1)
+
+        browser.close()
+        fail(
+            f"Timed out waiting for LinkedIn login after {_timeout}s. "
+            "Use --timeout to extend or finish login and try again.",
+            code=ExitCode.AUTH,
+        )

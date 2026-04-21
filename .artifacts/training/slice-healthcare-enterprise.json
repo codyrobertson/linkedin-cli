@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-healthcare-enterprise",
+  "scope": "all",
+  "industry": "healthcare",
+  "topics": [
+    "enterprise"
+  ],
+  "sample_count": 258,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.7018,
+    "rmse": 2.2019,
+    "r2": 0.3388
+  },
+  "model": {
+    "model_name": "slice-healthcare-enterprise",
+    "created_at": "2026-03-27T17:27:37.950507+00:00",
+    "updated_at": "2026-03-27T17:27:37.950507+00:00",
+    "scope": "all",
+    "sample_count": 258,
+    "intercept": 2.205703862792833,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.6933438299364068,
+      -0.3741838576600447,
+      0.535297767087782,
+      1.0472873178969948,
+      2.4169536290060436,
+      -0.3252198669025991,
+      -0.028010504400201235,
+      0.9551826794698163,
+      0.5539314057150313,
+      -0.013972851228996344,
+      -0.2751956275538508,
+      -0.15341369196577037,
+      -0.40238664803521407,
+      1.5907756794195782,
+      0.0,
+      -0.5304469470621728,
+      -0.34566101338405597,
+      0.09058571452312338,
+      -0.31632867158642414,
+      0.0,
+      -0.07433582110640428,
+      -0.6932925624635532,
+      0.247601396620505,
+      0.05083341261277193
+    ],
+    "metrics": {
+      "mae": 1.7018,
+      "r2": 0.3388,
+      "rmse": 2.2019
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "healthcare",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.6264,
+      "topics": [
+        "enterprise"
+      ]
+    }
+  }
+}

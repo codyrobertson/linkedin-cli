@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-healthcare-automation",
+  "scope": "all",
+  "industry": "healthcare",
+  "topics": [
+    "automation"
+  ],
+  "sample_count": 599,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.8824,
+    "rmse": 2.4425,
+    "r2": 0.2676
+  },
+  "model": {
+    "model_name": "slice-healthcare-automation",
+    "created_at": "2026-03-27T17:27:11.370124+00:00",
+    "updated_at": "2026-03-27T17:27:11.370124+00:00",
+    "scope": "all",
+    "sample_count": 599,
+    "intercept": 2.1602700366022147,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.3898517598207095,
+      -0.13475776414952198,
+      0.8303198970476481,
+      1.3731282925564356,
+      1.7507364432445616,
+      -0.3118128601455003,
+      -0.18126629746000722,
+      0.8492279422740486,
+      -0.2647802667915807,
+      -0.0828806260567516,
+      -0.07061639077687044,
+      0.006991521919448264,
+      -0.39391073404182714,
+      2.2429181062919654,
+      0.0,
+      -0.5346757080758255,
+      -0.2213202251184735,
+      0.08326904180206883,
+      0.23171702746522943,
+      0.19786100620517627,
+      -0.11161712923514877,
+      -0.46767964477620866,
+      -0.14568522219850627,
+      -0.37732292885277313
+    ],
+    "metrics": {
+      "mae": 1.8824,
+      "r2": 0.2676,
+      "rmse": 2.4425
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "healthcare",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.3677,
+      "topics": [
+        "automation"
+      ]
+    }
+  }
+}

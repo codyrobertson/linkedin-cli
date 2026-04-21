@@ -1,0 +1,8 @@
+{
+  "company": "Healthcare Automation Co",
+  "buyer_roles": ["operations", "compliance", "healthcare"],
+  "industries": ["healthcare", "ai", "workflow"],
+  "problem_keywords": ["claims", "intake", "documentation", "workflow"],
+  "preferred_cta": ["soft_authority", "none"],
+  "tone_constraints": ["assertive", "exploratory"]
+}

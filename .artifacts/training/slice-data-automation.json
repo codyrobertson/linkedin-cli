@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-data-automation",
+  "scope": "all",
+  "industry": "data",
+  "topics": [
+    "automation"
+  ],
+  "sample_count": 599,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 2.0633,
+    "rmse": 2.7486,
+    "r2": 0.1703
+  },
+  "model": {
+    "model_name": "slice-data-automation",
+    "created_at": "2026-03-27T17:32:30.065088+00:00",
+    "updated_at": "2026-03-27T17:32:30.065088+00:00",
+    "scope": "all",
+    "sample_count": 599,
+    "intercept": 2.972793277314961,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.941708342724956,
+      0.2075696683903032,
+      -0.25621747708354575,
+      0.6130482266542618,
+      1.2761033201802614,
+      -0.17919189944769667,
+      0.0010542770005768783,
+      0.5319985380728338,
+      0.18247567546456672,
+      0.04188263087393684,
+      -0.2477971553963506,
+      -0.048196113286010804,
+      -0.8362579852721697,
+      1.8976468839413911,
+      0.0,
+      -0.42764543234724584,
+      0.6004634352673015,
+      -0.47377471533551035,
+      -0.09422082838775567,
+      0.4186131162230896,
+      0.44812577695003175,
+      -0.47987696314346096,
+      -0.07092432326587225,
+      -0.5226734907914882
+    ],
+    "metrics": {
+      "mae": 2.0633,
+      "r2": 0.1703,
+      "rmse": 2.7486
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "data",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.4828,
+      "topics": [
+        "automation"
+      ]
+    }
+  }
+}

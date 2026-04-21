@@ -1,0 +1,149 @@
+[content] launching broad taxonomic campaign with 74 industries, 80 topics, 404134 queries
+[content] campaign started: 4042 jobs across 404134 queries limit=1000000
+[content] campaign job 1/4042: million-corpus-searxng-ultrabroad-recursive-v2-001 (100 queries)
+[content] query 1/100: site:linkedin.com/posts ai agents[content] query 2/100: site:linkedin.com/posts ai automation
+
+[content] query 3/100: site:linkedin.com/posts ai workflow
+[content] query 10/100: site:linkedin.com/posts ai scaling
+[content] query 20/100: site:linkedin.com/posts ai analytics
+[content] query 30/100: site:linkedin.com/posts ai zero trust
+[content] query 40/100: site:linkedin.com/posts ai pricing
+[content] query 50/100: site:linkedin.com/posts ai partnerships
+[content] query 60/100: site:linkedin.com/posts ai customer success
+[content] query 70/100: site:linkedin.com/posts ai lessons
+[content] query 80/100: site:linkedin.com/posts ai stack
+[content] query 90/100: site:linkedin.com/posts cybersecurity scaling
+[content] query 100/100: site:linkedin.com/posts cybersecurity analytics
+[content] campaign job complete: million-corpus-searxng-ultrabroad-recursive-v2-001 stored 0 total 0/1000000
+[content] campaign job 2/4042: million-corpus-searxng-ultrabroad-recursive-v2-002 (100 queries)
+[content] query 1/100: site:linkedin.com/posts cybersecurity data engineering
+[content] query 2/100: site:linkedin.com/posts cybersecurity platform engineering
+[content] query 3/100: site:linkedin.com/posts cybersecurity developer experience
+[content] query 10/100: site:linkedin.com/posts cybersecurity zero trust
+[content] query 20/100: site:linkedin.com/posts cybersecurity pricing
+[content] query 30/100: site:linkedin.com/posts cybersecurity partnerships
+[content] query 40/100: site:linkedin.com/posts cybersecurity customer success
+[content] query 50/100: site:linkedin.com/posts cybersecurity lessons
+[content] query 60/100: site:linkedin.com/posts cybersecurity stack
+[content] query 70/100: site:linkedin.com/posts cloud scaling
+[content] query 80/100: site:linkedin.com/posts cloud analytics
+[content] query 90/100: site:linkedin.com/posts cloud zero trust
+[content] query 100/100: site:linkedin.com/posts cloud pricing
+[content] campaign job complete: million-corpus-searxng-ultrabroad-recursive-v2-002 stored 0 total 0/1000000
+[content] campaign job 3/4042: million-corpus-searxng-ultrabroad-recursive-v2-003 (100 queries)
+[content] query 1/100: site:linkedin.com/posts cloud packaging
+[content] query 2/100: site:linkedin.com/posts cloud monetization
+[content] query 3/100: site:linkedin.com/posts cloud product marketing
+[content] query 10/100: site:linkedin.com/posts cloud partnerships
+[content] query 20/100: site:linkedin.com/posts cloud customer success
+[content] query 30/100: site:linkedin.com/posts cloud lessons
+[content] query 40/100: site:linkedin.com/posts cloud stack
+[content] query 50/100: site:linkedin.com/posts data scaling
+[content] query 60/100: site:linkedin.com/posts data analytics
+[content] query 70/100: site:linkedin.com/posts data zero trust
+[content] query 80/100: site:linkedin.com/posts data pricing
+[content] query 90/100: site:linkedin.com/posts data partnerships
+[content] query 100/100: site:linkedin.com/posts data customer success
+[content] campaign job complete: million-corpus-searxng-ultrabroad-recursive-v2-003 stored 0 total 0/1000000
+[content] campaign job 4/4042: million-corpus-searxng-ultrabroad-recursive-v2-004 (100 queries)
+[content] query 1/100: site:linkedin.com/posts data procurement
+[content] query 2/100: site:linkedin.com/posts data hiring
+[content] query 3/100: site:linkedin.com/posts data recruiting
+[content] query 10/100: site:linkedin.com/posts data lessons
+[content] query 20/100: site:linkedin.com/posts data stack
+[content] query 30/100: site:linkedin.com/posts analytics scaling
+[content] query 40/100: site:linkedin.com/posts analytics analytics
+[content] query 50/100: site:linkedin.com/posts analytics zero trust
+[content] query 60/100: site:linkedin.com/posts analytics pricing
+[content] query 70/100: site:linkedin.com/posts analytics partnerships
+[content] query 80/100: site:linkedin.com/posts analytics customer success
+[content] query 90/100: site:linkedin.com/posts analytics lessons
+[content] query 100/100: site:linkedin.com/posts analytics stack
+[content] campaign job complete: million-corpus-searxng-ultrabroad-recursive-v2-004 stored 0 total 0/1000000
+[content] campaign job 5/4042: million-corpus-searxng-ultrabroad-recursive-v2-005 (100 queries)
+[content] query 1/100: site:linkedin.com/posts devtools agents[content] query 2/100: site:linkedin.com/posts devtools automation
+
+[content] query 3/100: site:linkedin.com/posts devtools workflow
+[content] query 10/100: site:linkedin.com/posts devtools scaling
+[content] query 20/100: site:linkedin.com/posts devtools analytics
+[content] query 30/100: site:linkedin.com/posts devtools zero trust
+[content] query 40/100: site:linkedin.com/posts devtools pricing
+[content] query 50/100: site:linkedin.com/posts devtools partnerships
+[content] query 60/100: site:linkedin.com/posts devtools customer success
+[content] query 70/100: site:linkedin.com/posts devtools lessons
+[content] query 80/100: site:linkedin.com/posts devtools stack
+[content] query 90/100: site:linkedin.com/posts infrastructure scaling
+[content] query 100/100: site:linkedin.com/posts infrastructure analytics
+[content] campaign job complete: million-corpus-searxng-ultrabroad-recursive-v2-005 stored 0 total 0/1000000
+[content] campaign job 6/4042: million-corpus-searxng-ultrabroad-recursive-v2-006 (100 queries)
+[content] query 1/100: site:linkedin.com/posts infrastructure data engineering
+[content] query 2/100: site:linkedin.com/posts infrastructure platform engineering
+[content] query 3/100: site:linkedin.com/posts infrastructure developer experience
+[content] query 10/100: site:linkedin.com/posts infrastructure zero trust
+[content] query 20/100: site:linkedin.com/posts infrastructure pricing
+[content] query 30/100: site:linkedin.com/posts infrastructure partnerships
+[content] query 40/100: site:linkedin.com/posts infrastructure customer success
+[content] query 50/100: site:linkedin.com/posts infrastructure lessons
+[content] query 60/100: site:linkedin.com/posts infrastructure stack
+[content] query 70/100: site:linkedin.com/posts software scaling
+[content] query 80/100: site:linkedin.com/posts software analytics
+[content] query 90/100: site:linkedin.com/posts software zero trust
+[content] query 100/100: site:linkedin.com/posts software pricing
+[content] campaign job complete: million-corpus-searxng-ultrabroad-recursive-v2-006 stored 0 total 0/1000000
+[content] campaign job 7/4042: million-corpus-searxng-ultrabroad-recursive-v2-007 (100 queries)
+[content] query 1/100: site:linkedin.com/posts software packaging
+[content] query 2/100: site:linkedin.com/posts software monetization
+[content] query 3/100: site:linkedin.com/posts software product marketing
+[content] query 10/100: site:linkedin.com/posts software partnerships
+[content] query 20/100: site:linkedin.com/posts software customer success
+[content] query 30/100: site:linkedin.com/posts software lessons
+[content] query 40/100: site:linkedin.com/posts software stack
+[content] query 50/100: site:linkedin.com/posts saas scaling
+[content] query 60/100: site:linkedin.com/posts saas analytics
+[content] query 70/100: site:linkedin.com/posts saas zero trust
+[content] query 80/100: site:linkedin.com/posts saas pricing
+[content] query 90/100: site:linkedin.com/posts saas partnerships
+[content] query 100/100: site:linkedin.com/posts saas customer success
+[content] campaign job complete: million-corpus-searxng-ultrabroad-recursive-v2-007 stored 0 total 0/1000000
+[content] campaign job 8/4042: million-corpus-searxng-ultrabroad-recursive-v2-008 (100 queries)
+[content] query 1/100: site:linkedin.com/posts saas procurement
+[content] query 2/100: site:linkedin.com/posts saas hiring
+[content] query 3/100: site:linkedin.com/posts saas recruiting
+[content] query 10/100: site:linkedin.com/posts saas lessons
+[content] query 20/100: site:linkedin.com/posts saas stack
+[content] query 30/100: site:linkedin.com/posts open source scaling
+[content] query 40/100: site:linkedin.com/posts open source analytics
+[content] query 50/100: site:linkedin.com/posts open source zero trust
+[content] query 60/100: site:linkedin.com/posts open source pricing
+[content] query 70/100: site:linkedin.com/posts open source partnerships
+[content] query 80/100: site:linkedin.com/posts open source customer success
+[content] query 90/100: site:linkedin.com/posts open source lessons
+[content] query 100/100: site:linkedin.com/posts open source stack
+[content] campaign job complete: million-corpus-searxng-ultrabroad-recursive-v2-008 stored 0 total 0/1000000
+[content] campaign job 9/4042: million-corpus-searxng-ultrabroad-recursive-v2-009 (100 queries)
+[content] query 1/100: site:linkedin.com/posts mlops agents
+[content] query 2/100: site:linkedin.com/posts mlops automation
+[content] query 3/100: site:linkedin.com/posts mlops workflow
+[content] query 10/100: site:linkedin.com/posts mlops scaling
+[content] query 20/100: site:linkedin.com/posts mlops analytics
+[content] query 30/100: site:linkedin.com/posts mlops zero trust
+[content] query 40/100: site:linkedin.com/posts mlops pricing
+[content] query 50/100: site:linkedin.com/posts mlops partnerships
+[content] query 60/100: site:linkedin.com/posts mlops customer success
+[content] query 70/100: site:linkedin.com/posts mlops lessons
+[content] query 80/100: site:linkedin.com/posts mlops stack
+[content] query 90/100: site:linkedin.com/posts fintech scaling
+[content] query 100/100: site:linkedin.com/posts fintech analytics
+[content] campaign job complete: million-corpus-searxng-ultrabroad-recursive-v2-009 stored 0 total 0/1000000
+[content] campaign job 10/4042: million-corpus-searxng-ultrabroad-recursive-v2-010 (100 queries)
+[content] query 1/100: site:linkedin.com/posts fintech data engineering
+[content] query 2/100: site:linkedin.com/posts fintech platform engineering
+[content] query 3/100: site:linkedin.com/posts fintech developer experience
+[content] query 10/100: site:linkedin.com/posts fintech zero trust
+[content] query 20/100: site:linkedin.com/posts fintech pricing
+[content] query 30/100: site:linkedin.com/posts fintech partnerships
+[content] query 40/100: site:linkedin.com/posts fintech customer success
+[content] query 50/100: site:linkedin.com/posts fintech lessons
+[content] query 60/100: site:linkedin.com/posts fintech stack
+[content] query 70/100: site:linkedin.com/posts banking scaling
+[content] query 80/100: site:linkedin.com/posts banking analytics

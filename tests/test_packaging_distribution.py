@@ -56,3 +56,23 @@ def test_homebrew_formula_template_exists() -> None:
     assert 'class LinkedinDiscoveryCli < Formula' in formula
     assert 'virtualenv_install_with_resources' in formula
     assert 'linkedin-discovery-cli' in formula
+
+
+def test_docker_compose_includes_local_searxng_service() -> None:
+    compose = read_text("docker-compose.yml")
+
+    assert "searxng:" in compose
+    assert "image: searxng/searxng" in compose
+    assert "127.0.0.1:8080:8080" in compose
+    assert "FORCE_OWNERSHIP: \"true\"" in compose
+    assert "searxng_data:" in compose
+    assert "searxng_config:/etc/searxng" in compose
+
+
+def test_bootstrap_script_enables_local_searxng_json_api() -> None:
+    script = read_text("scripts/bootstrap_searxng.sh")
+
+    assert "docker compose up -d searxng" in script
+    assert "settings.yml" in script
+    assert "- json" in script
+    assert "docker restart linkedin-cli-searxng-1" in script

@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-topic-automation",
+  "scope": "all",
+  "industry": null,
+  "topics": [
+    "automation"
+  ],
+  "sample_count": 4376,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 2.0459,
+    "rmse": 2.6647,
+    "r2": 0.1976
+  },
+  "model": {
+    "model_name": "slice-topic-automation",
+    "created_at": "2026-03-27T17:27:30.621746+00:00",
+    "updated_at": "2026-03-27T17:27:30.621746+00:00",
+    "scope": "all",
+    "sample_count": 4376,
+    "intercept": 2.5180170882742106,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.6346383399076527,
+      -0.006626088586819376,
+      0.21316723074253058,
+      0.8942790681794462,
+      1.7888962595717814,
+      -0.3316358672605475,
+      -0.015500524888667648,
+      1.0273780445491931,
+      0.029923555186974305,
+      0.010572031285711403,
+      0.12902367186655972,
+      -0.1104409813475868,
+      -0.8296418763715521,
+      1.7347196396924913,
+      0.0,
+      -0.42169984756084355,
+      0.16195490644298347,
+      -0.24997907630211935,
+      -0.3140559216989801,
+      0.13382562030872144,
+      -0.09499958115809765,
+      -0.19911609159344903,
+      0.1301977131740682,
+      -0.16557575645224173
+    ],
+    "metrics": {
+      "mae": 2.0459,
+      "r2": 0.1976,
+      "rmse": 2.6647
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": null,
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.4208,
+      "topics": [
+        "automation"
+      ]
+    }
+  }
+}

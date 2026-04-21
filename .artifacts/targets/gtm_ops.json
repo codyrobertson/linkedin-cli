@@ -1,0 +1,8 @@
+{
+  "company": "Revenue Systems Co",
+  "buyer_roles": ["revops", "vp sales", "sales ops"],
+  "industries": ["sales", "marketing", "b2b"],
+  "problem_keywords": ["pipeline", "automation", "outbound", "conversion"],
+  "preferred_cta": ["commercial", "engagement"],
+  "tone_constraints": ["assertive", "directive"]
+}

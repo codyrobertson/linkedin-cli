@@ -1,0 +1,12 @@
+{
+  "trained": false,
+  "model_name": "slice-healthcare-agents",
+  "scope": "all",
+  "sample_count": 100,
+  "min_samples": 150,
+  "industry": "healthcare",
+  "topics": [
+    "agents"
+  ],
+  "reason": "Not enough outcome-synced posts to train a model."
+}

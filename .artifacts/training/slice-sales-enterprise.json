@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-sales-enterprise",
+  "scope": "all",
+  "industry": "sales",
+  "topics": [
+    "enterprise"
+  ],
+  "sample_count": 536,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 2.1435,
+    "rmse": 2.7828,
+    "r2": 0.3307
+  },
+  "model": {
+    "model_name": "slice-sales-enterprise",
+    "created_at": "2026-03-27T17:28:41.733896+00:00",
+    "updated_at": "2026-03-27T17:28:41.733896+00:00",
+    "scope": "all",
+    "sample_count": 536,
+    "intercept": 3.1418599354584216,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.13918327616678214,
+      -0.13207600677129508,
+      -0.1981598113266452,
+      1.1878129337743235,
+      2.5452916254405493,
+      -0.12641237153604853,
+      -0.028995143731502984,
+      0.7085119266972775,
+      0.6528205474560864,
+      -0.03902213898676262,
+      1.1005866884005162,
+      -0.27240470678753215,
+      -1.3545917465042394,
+      1.5344960904408138,
+      -0.0737457468299509,
+      -0.6761895259900587,
+      0.17759710719986405,
+      -0.2862100061187219,
+      -0.8760535395703071,
+      0.44558760947990844,
+      -0.5574178668681814,
+      0.01653381315613944,
+      0.28655397790259496,
+      -0.17375216583902228
+    ],
+    "metrics": {
+      "mae": 2.1435,
+      "r2": 0.3307,
+      "rmse": 2.7828
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "sales",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 4.6921,
+      "topics": [
+        "enterprise"
+      ]
+    }
+  }
+}

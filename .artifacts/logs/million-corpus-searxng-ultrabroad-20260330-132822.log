@@ -1,0 +1,19 @@
+[content] launching broad taxonomic campaign with 190 industries, 213 topics, 100000 queries
+[content] campaign started: 1000 jobs across 100000 queries limit=1000000
+[content] campaign job 1/1000: million-corpus-searxng-ultrabroad-recursive-v4-wave1-001 (100 queries)
+[content] query 1/100: site:linkedin.com/posts ai agents
+[content] query 2/100: site:linkedin.com/posts ai agent orchestration
+[content] query 3/100: site:linkedin.com/posts ai multi agent systems
+[content] query 10/100: site:linkedin.com/posts ai genai
+[content] query 20/100: site:linkedin.com/posts ai application security
+[content] query 30/100: site:linkedin.com/posts ai data governance
+[content] query 40/100: site:linkedin.com/posts ai mlops
+[content] query 50/100: site:linkedin.com/posts ai identity
+[content] query 60/100: site:linkedin.com/posts ai integration
+[content] query 70/100: site:linkedin.com/posts ai voice agents
+[content] query 80/100: site:linkedin.com/posts ai supply chain ops
+[content] query 90/100: site:linkedin.com/posts ai erp modernization
+[content] query 100/100: site:linkedin.com/posts ai sustainability reporting
+[content] results: 100 for site:linkedin.com/posts ai agents
+[content] results: 100 for site:linkedin.com/posts ai agent orchestration
+[content] results: 100 for site:linkedin.com/posts ai multi agent systems

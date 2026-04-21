@@ -21,12 +21,32 @@ logger = logging.getLogger(__name__)
 DB_PATH = CONFIG_DIR / "state.sqlite"
 
 
-def get_due_scheduled_posts() -> list[dict]:
+def _local_timezone():
+    return datetime.now().astimezone().tzinfo
+
+
+def _parse_scheduled_at(value: str, *, local_tz=None) -> datetime:
+    text = str(value or "").strip()
+    if not text:
+        raise ValueError("scheduled_at is empty")
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+    parsed = datetime.fromisoformat(text)
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=local_tz or _local_timezone())
+    return parsed.astimezone(timezone.utc)
+
+
+def get_due_scheduled_posts(now: datetime | None = None) -> list[dict]:
     """Find scheduled posts that are due for execution."""
     if not DB_PATH.exists():
         return []
 
-    now = datetime.now(timezone.utc).isoformat()
+    current = now or datetime.now(timezone.utc)
+    if current.tzinfo is None:
+        current = current.replace(tzinfo=_local_timezone())
+    current_utc = current.astimezone(timezone.utc)
+    local_tz = _local_timezone()
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
     try:
@@ -36,13 +56,22 @@ def get_due_scheduled_posts() -> list[dict]:
             WHERE action_type = 'post.scheduled'
               AND state IN ('planned', 'dry_run')
               AND scheduled_at IS NOT NULL
-              AND scheduled_at <= ?
             ORDER BY scheduled_at ASC
             """,
-            (now,),
         )
         rows = cursor.fetchall()
-        return [dict(row) for row in rows]
+        due: list[tuple[datetime, dict]] = []
+        for row in rows:
+            item = dict(row)
+            try:
+                scheduled_at = _parse_scheduled_at(str(item.get("scheduled_at") or ""), local_tz=local_tz)
+            except Exception as exc:
+                logger.warning("Skipping invalid scheduled_at for action %s: %s", item.get("action_id"), exc)
+                continue
+            if scheduled_at <= current_utc:
+                due.append((scheduled_at, item))
+        due.sort(key=lambda pair: pair[0])
+        return [item for _, item in due]
     finally:
         conn.close()
 

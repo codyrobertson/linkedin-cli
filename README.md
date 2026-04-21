@@ -17,6 +17,12 @@ pip install linkedin-discovery-cli
 
 # Local development install from the repo root
 pip install -e .[dev]
+
+# Optional browser capture support
+pip install playwright && python -m playwright install chromium firefox
+
+# Optional local Qwen training support
+pip install -e .[qwen]
 ```
 
 The published package name is `linkedin-discovery-cli`. The console command remains `linkedin`.
@@ -28,8 +34,11 @@ The published package name is `linkedin-discovery-cli`. The console command rema
 export LINKEDIN_USERNAME="you@example.com"
 export LINKEDIN_PASSWORD="your-password"
 
-# Log in
+# Log in (form auth or interactive browser capture)
 linkedin login
+linkedin login --browser --browser-name chrome
+linkedin login --browser --browser-name brave
+linkedin login --browser --browser-name firefox
 
 # Check session status
 linkedin status
@@ -45,6 +54,28 @@ linkedin company openai
 
 # Search people
 linkedin search people "machine learning engineer San Francisco"
+
+# Harvest LinkedIn posts into the local content library
+# Uses authenticated LinkedIn search first, then falls back to public search if needed
+linkedin content harvest --industry ai --topic agents --limit 100 --per-query 25
+
+# Optional: run a local SearXNG instance for faster public discovery
+docker compose up -d searxng
+linkedin content harvest \
+  --industry ai \
+  --topic workflow \
+  --backend public-only \
+  --public-search searxng \
+  --searxng-url http://127.0.0.1:8080 \
+  --limit 100 \
+  --per-query 25
+
+# Review harvested posts and aggregate stats
+linkedin content list --industry ai --limit 20
+linkedin content stats
+linkedin content build-sft-dataset --output .artifacts/qwen/sft-ai-workflow --industry ai --topic workflow
+linkedin content train-qwen --phase sft --dataset-dir .artifacts/qwen/sft-ai-workflow --base-model Qwen/Qwen2.5-3B-Instruct --dry-run
+linkedin content train-qwen --phase sft --dataset-dir .artifacts/qwen/sft-ai-workflow --runner modal --wandb-project linkedin-autonomy --wandb-entity your-team --dry-run
 
 # Search with enrichment (fetches full profile for each result)
 linkedin search people "CTO fintech" --enrich --limit 3
@@ -115,6 +146,67 @@ linkedin completion bash
 linkedin completion zsh
 ```
 
+## Local SearXNG discovery
+
+For large public-only or hybrid content harvest campaigns, run a local SearXNG instance from this repo:
+
+```bash
+./scripts/bootstrap_searxng.sh
+curl 'http://127.0.0.1:8080/search?q=site%3Alinkedin.com%2Fposts%20ai%20workflow&format=json'
+```
+
+Then point the harvest commands at the local endpoint:
+
+```bash
+linkedin content harvest-campaign \
+  --industry ai \
+  --industry fintech \
+  --topic agents \
+  --topic workflow \
+  --backend public-only \
+  --public-search searxng \
+  --searxng-url http://127.0.0.1:8080 \
+  --searxng-engine google \
+  --speed max \
+  --per-query 50 \
+  --limit 100000 \
+  --per-job-limit 1000 \
+  --queries-per-job 50 \
+  --job-prefix million-corpus-searxng
+```
+
+Use `--backend hybrid` if you want authenticated LinkedIn search first and SearXNG as the public fallback.
+
+## Stacked ranking
+
+You can train a general-purpose stacked ranking artifact from the local DuckDB warehouse, then rerank posts for a specific company or buyer target without retraining the model:
+
+```bash
+# Build the warehouse-backed feature views
+linkedin content build-foundation-views --industry ai
+
+# Train the three-head foundation model
+linkedin content train-stacked-model --name foundation-v1 --industry ai --min-samples 100
+
+# Rerank warehouse posts for a target profile
+linkedin content rerank-target --model-name foundation-v1 --target-file target.json --limit 10
+```
+
+Example `target.json`:
+
+```json
+{
+  "company": "Acme AI",
+  "buyer_roles": ["vp engineering"],
+  "industries": ["ai", "devtools"],
+  "problem_keywords": ["workflow", "orchestration"],
+  "preferred_cta": ["soft_authority", "commercial"],
+  "tone_constraints": ["assertive"]
+}
+```
+
+Each reranked row returns a score breakdown for `public_performance`, `persona_style`, `business_intent`, and `target_similarity`.
+
 ## Configuration
 
 ### Config directory
@@ -143,6 +235,7 @@ export LINKEDIN_CLI_HOME=/path/to/custom/config
 | `LINKEDIN_PASSWORD` | For login | LinkedIn password |
 | `LINKEDIN_USER_AGENT` | No | Custom browser user agent |
 | `LINKEDIN_CLI_HOME` | No | Override config directory |
+| `BRAVE_EXECUTABLE_PATH` | No | Custom Brave executable path for `--browser-name brave` |
 
 ## Commands
 
@@ -150,7 +243,7 @@ export LINKEDIN_CLI_HOME=/path/to/custom/config
 
 | Command | Description |
 |---------|-------------|
-| `login` | Authenticate via web form flow |
+| `login` | Authenticate via web form flow, or `--browser` to capture cookies from Chrome/Firefox/Brave |
 | `logout` | Remove saved session |
 | `status` | Inspect session health and account info |
 | `doctor` | Check local config, session, and SQLite state health |
@@ -161,6 +254,9 @@ export LINKEDIN_CLI_HOME=/path/to/custom/config
 | `company TARGET` | Fetch and summarize a company |
 | `search KIND QUERY` | Search people, companies, or posts |
 | `activity TARGET` | Find public posts for a person |
+| `content harvest|list|stats` | Harvest LinkedIn posts with auth-first search and inspect the local content library |
+| `content build-sft-dataset|build-preference-dataset` | Build local Qwen tuning corpora from owned posts, harvested exemplars, and candidate decisions |
+| `content train-qwen|qwen-runs` | Plan or run local Qwen SFT/preference jobs and inspect recorded runs |
 | `discover ...` | Build and inspect the ranked prospect queue |
 | `snapshot` | Snapshot authenticated user profile |
 

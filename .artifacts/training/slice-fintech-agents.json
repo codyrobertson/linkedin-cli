@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-fintech-agents",
+  "scope": "all",
+  "industry": "fintech",
+  "topics": [
+    "agents"
+  ],
+  "sample_count": 320,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 2.1744,
+    "rmse": 2.7346,
+    "r2": 0.3415
+  },
+  "model": {
+    "model_name": "slice-fintech-agents",
+    "created_at": "2026-03-27T17:25:13.011575+00:00",
+    "updated_at": "2026-03-27T17:25:13.011575+00:00",
+    "scope": "all",
+    "sample_count": 320,
+    "intercept": 3.5314757851724874,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.8629610994123043,
+      -0.18957876317210995,
+      0.04016863094269323,
+      1.4391540978531223,
+      3.109343701989987,
+      -0.18851290734798426,
+      -0.7311340759591468,
+      0.9993529200481901,
+      0.2083863249188185,
+      -0.04537749761600202,
+      0.4126160859867541,
+      -0.6420792504396426,
+      -0.7672114810086735,
+      1.6678777118306805,
+      0.0,
+      -0.5821172433564364,
+      0.02241659927608119,
+      -0.14808772505485818,
+      0.1449460096224477,
+      -0.2994667164603396,
+      -0.006584773258891911,
+      -0.34993322451709347,
+      0.03812297511384709,
+      -0.2348726396351844
+    ],
+    "metrics": {
+      "mae": 2.1744,
+      "r2": 0.3415,
+      "rmse": 2.7346
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "fintech",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 4.8366,
+      "topics": [
+        "agents"
+      ]
+    }
+  }
+}

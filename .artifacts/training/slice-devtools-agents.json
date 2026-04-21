@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-devtools-agents",
+  "scope": "all",
+  "industry": "devtools",
+  "topics": [
+    "agents"
+  ],
+  "sample_count": 259,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.7925,
+    "rmse": 2.3088,
+    "r2": 0.1667
+  },
+  "model": {
+    "model_name": "slice-devtools-agents",
+    "created_at": "2026-03-27T17:30:12.320934+00:00",
+    "updated_at": "2026-03-27T17:30:12.320934+00:00",
+    "scope": "all",
+    "sample_count": 259,
+    "intercept": 2.684472645252579,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.6534488595449701,
+      -0.07911233590656391,
+      0.08098647746311727,
+      0.3783519293429057,
+      2.151082569579346,
+      -0.04007832336964834,
+      -0.09860962582759691,
+      0.5519697271771667,
+      -0.34145567790928427,
+      -0.08338621883483957,
+      0.27612916911803476,
+      -0.32050553560787814,
+      -0.22142199814017832,
+      0.44070996189489103,
+      0.0,
+      -0.3925567499415755,
+      -0.14875626004088632,
+      0.3022832915966403,
+      -0.5677078173301259,
+      0.1233057026142111,
+      0.24656754068811657,
+      0.39018052146102045,
+      -0.04778208371127996,
+      -0.3835935821077653
+    ],
+    "metrics": {
+      "mae": 1.7925,
+      "r2": 0.1667,
+      "rmse": 2.3088
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "devtools",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.1353,
+      "topics": [
+        "agents"
+      ]
+    }
+  }
+}

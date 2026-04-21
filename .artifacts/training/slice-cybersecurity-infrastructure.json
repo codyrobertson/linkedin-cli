@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-cybersecurity-infrastructure",
+  "scope": "all",
+  "industry": "cybersecurity",
+  "topics": [
+    "infrastructure"
+  ],
+  "sample_count": 976,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.9264,
+    "rmse": 2.4607,
+    "r2": 0.2352
+  },
+  "model": {
+    "model_name": "slice-cybersecurity-infrastructure",
+    "created_at": "2026-03-27T17:26:53.490587+00:00",
+    "updated_at": "2026-03-27T17:26:53.490587+00:00",
+    "scope": "all",
+    "sample_count": 976,
+    "intercept": 2.0032650124552376,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.36496955589343605,
+      -0.27538494560291304,
+      -0.15072208126960943,
+      0.5798519545702603,
+      2.4596616724629925,
+      0.19487334981704818,
+      -0.12264007538297014,
+      0.8467802765668065,
+      0.2294664244242509,
+      -0.0028485031638021334,
+      0.06399393154170008,
+      0.220605161042115,
+      -0.07776388263779609,
+      1.9194259548740649,
+      0.0,
+      -0.4373289953140463,
+      -0.19630300887762503,
+      -0.06686127100186577,
+      -0.20703451408692156,
+      -0.05578451869819251,
+      0.05728380462834026,
+      -0.4541681838865409,
+      0.22486042270810852,
+      -0.26565028585833195
+    ],
+    "metrics": {
+      "mae": 1.9264,
+      "r2": 0.2352,
+      "rmse": 2.4607
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "cybersecurity",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.2465,
+      "topics": [
+        "infrastructure"
+      ]
+    }
+  }
+}

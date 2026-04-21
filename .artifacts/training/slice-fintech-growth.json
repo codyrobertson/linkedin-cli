@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-fintech-growth",
+  "scope": "all",
+  "industry": "fintech",
+  "topics": [
+    "growth"
+  ],
+  "sample_count": 439,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.9458,
+    "rmse": 2.4356,
+    "r2": 0.4255
+  },
+  "model": {
+    "model_name": "slice-fintech-growth",
+    "created_at": "2026-03-27T17:25:30.364226+00:00",
+    "updated_at": "2026-03-27T17:25:30.364226+00:00",
+    "scope": "all",
+    "sample_count": 439,
+    "intercept": 2.578935241375473,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.7465432309723457,
+      -0.18231137404548453,
+      1.3053936736631848,
+      0.8507240199208301,
+      2.8639603256753876,
+      -0.9508967287876642,
+      -0.9461575110900301,
+      1.7266633878104911,
+      0.11784013092560604,
+      0.053933992699809315,
+      0.6575669540977102,
+      0.17556061043624016,
+      -0.8087644122694739,
+      1.6776409698901997,
+      0.0,
+      -0.8726854550992137,
+      0.22685412632562219,
+      -0.23719201251795421,
+      -0.7962631719927225,
+      0.09189567495438514,
+      0.0,
+      -0.5146041727450916,
+      0.7282341082589288,
+      -0.39228577976704565
+    ],
+    "metrics": {
+      "mae": 1.9458,
+      "r2": 0.4255,
+      "rmse": 2.4356
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "fintech",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 4.1648,
+      "topics": [
+        "growth"
+      ]
+    }
+  }
+}

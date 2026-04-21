@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-fintech-infrastructure",
+  "scope": "all",
+  "industry": "fintech",
+  "topics": [
+    "infrastructure"
+  ],
+  "sample_count": 284,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.8723,
+    "rmse": 2.3478,
+    "r2": 0.3682
+  },
+  "model": {
+    "model_name": "slice-fintech-infrastructure",
+    "created_at": "2026-03-27T17:25:49.493309+00:00",
+    "updated_at": "2026-03-27T17:25:49.493309+00:00",
+    "scope": "all",
+    "sample_count": 284,
+    "intercept": 3.522218210326078,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      1.1040788063072935,
+      -0.18953822021155525,
+      0.5986474904628132,
+      1.0755699198534379,
+      2.5657853393794476,
+      -1.1636395579473011,
+      -1.3367424040359608,
+      1.758304383167508,
+      -0.13890360383884437,
+      -0.04197648597305588,
+      -0.2546202365616049,
+      -0.16322322652922683,
+      -0.9088638843670964,
+      1.786159016558285,
+      0.0,
+      -0.3271134552993178,
+      -0.059671943642747936,
+      0.0613686719998312,
+      -0.23783222461971978,
+      0.8500837010936257,
+      0.0,
+      0.1212782265375046,
+      -0.2945116170523657,
+      -0.7644348129012782
+    ],
+    "metrics": {
+      "mae": 1.8723,
+      "r2": 0.3682,
+      "rmse": 2.3478
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "fintech",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 4.1379,
+      "topics": [
+        "infrastructure"
+      ]
+    }
+  }
+}

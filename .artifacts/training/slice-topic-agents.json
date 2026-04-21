@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-topic-agents",
+  "scope": "all",
+  "industry": null,
+  "topics": [
+    "agents"
+  ],
+  "sample_count": 3838,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 2.2975,
+    "rmse": 2.9375,
+    "r2": 0.2738
+  },
+  "model": {
+    "model_name": "slice-topic-agents",
+    "created_at": "2026-03-27T17:27:08.553566+00:00",
+    "updated_at": "2026-03-27T17:27:08.553566+00:00",
+    "scope": "all",
+    "sample_count": 3838,
+    "intercept": 2.884175789178997,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.9733052888075513,
+      -0.19370049444819235,
+      0.3652278098727837,
+      0.813477628187145,
+      2.5474117174124564,
+      -0.06592452943071206,
+      -0.05736931995644953,
+      0.8204210545634005,
+      0.1710608249865548,
+      -0.041311053821663446,
+      0.3420546209898013,
+      -0.20667595552019974,
+      -1.064519076871393,
+      2.1555079007519806,
+      0.08515930882743991,
+      -0.5627937411068329,
+      -0.2805185121622199,
+      -0.027534178184836087,
+      -0.45873464745855563,
+      0.282497973868441,
+      -0.1552591569076531,
+      -0.4881159043469077,
+      0.2852432103860747,
+      -0.2513185981678486
+    ],
+    "metrics": {
+      "mae": 2.2975,
+      "r2": 0.2738,
+      "rmse": 2.9375
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": null,
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 4.3165,
+      "topics": [
+        "agents"
+      ]
+    }
+  }
+}

@@ -59,6 +59,26 @@ def _build_result(status: str, message: str, action_id: str, **extra: Any) -> di
     return payload
 
 
+def _extract_post_remote_ref(resp_data: dict[str, Any]) -> str | None:
+    create_data = (resp_data.get("data", {}).get("data", {})
+                   .get("createContentcreationDashShares", {}))
+    share_urn = create_data.get("resourceKey") or create_data.get("*entity")
+    activity_urn = None
+    for item in resp_data.get("included", []):
+        if isinstance(item, dict):
+            urn = item.get("activityUrn") or item.get("entityUrn") or ""
+            if "activity" in urn:
+                activity_urn = urn
+                break
+    return (
+        share_urn
+        or activity_urn
+        or resp_data.get("value", {}).get("activityUrn")
+        or resp_data.get("data", {}).get("activityUrn")
+        or resp_data.get("activityUrn")
+    )
+
+
 def _acquire_lock() -> Any:
     """Acquire single-account file lock. Returns the lock file handle."""
     LOCK_DIR.mkdir(parents=True, exist_ok=True)
@@ -145,7 +165,13 @@ def execute_action(
     # 1. Idempotency check
     existing = find_by_idempotency_key(account_id, idem_key)
     if existing and existing["action_id"] != action_id:
-        skip_states = {"planned", "executing", "retry_scheduled", "unknown_remote_state", "succeeded", "dry_run"}
+        skip_states = {"planned", "executing", "retry_scheduled", "unknown_remote_state", "succeeded"}
+        if existing["state"] == "dry_run" and dry_run:
+            return {
+                "status": "duplicate_skipped",
+                "message": "Action already exists as a dry run",
+                "existing_action": existing,
+            }
         if existing["state"] in skip_states:
             return {
                 "status": "duplicate_skipped",
@@ -157,7 +183,15 @@ def execute_action(
     if existing:
         action_id = existing["action_id"]
         action = existing
-        update_state(action_id, "planned", last_error=None, remote_ref=None)
+        update_state(
+            action_id,
+            "dry_run" if dry_run else "planned",
+            last_error=None,
+            remote_ref=None,
+            dry_run=dry_run,
+            plan=plan,
+        )
+        write_artifact(action_id, "plan", plan)
     else:
         action = create_action(
             action_id=action_id,
@@ -179,6 +213,21 @@ def execute_action(
     # Acquire write lock for live execution
     lock_fh = _acquire_lock()
     try:
+        from linkedin_cli.write.guards import evaluate_write_guard
+
+        guard = evaluate_write_guard(account_id, action_type)
+        if not guard.get("allowed"):
+            reason = str(guard.get("reason") or "Write blocked by local guardrail")
+            update_state(
+                action_id,
+                "blocked",
+                last_error=reason,
+                risk_flags=guard.get("risk_flags") or [],
+                dry_run=False,
+            )
+            write_artifact(action_id, "last_result", {"status": "blocked", "guard": guard})
+            return _build_result("blocked", reason, action_id, guard=guard)
+
         # Update state to executing
         update_state(action_id, "executing")
 
@@ -191,6 +240,8 @@ def execute_action(
             elif action_type == "experience.add":
                 voyager_get(session, "/voyager/api/me")
             elif action_type in ("connect", "follow"):
+                voyager_get(session, "/voyager/api/me")
+            elif action_type == "comment.post":
                 voyager_get(session, "/voyager/api/me")
         except Exception:
             pass  # Warm-up failure is non-fatal
@@ -215,6 +266,8 @@ def execute_action(
                 result = _follow(session, plan)
             elif action_type == "dm.send":
                 result = _dm_send(session, plan)
+            elif action_type == "comment.post":
+                result = _comment_post(session, plan)
             elif action_type == "post.scheduled":
                 result = _post_publish(session, plan)
             else:
@@ -343,17 +396,7 @@ def _post_publish(session: Session, plan: dict[str, Any]) -> dict[str, Any]:
     if response.status_code < 400:
         try:
             resp_data = response.json()
-            create_data = (resp_data.get("data", {}).get("data", {})
-                          .get("createContentcreationDashShares", {}))
-            share_urn = create_data.get("resourceKey") or create_data.get("*entity")
-            activity_urn = None
-            for item in resp_data.get("included", []):
-                if isinstance(item, dict):
-                    urn = item.get("activityUrn") or item.get("entityUrn") or ""
-                    if "activity" in urn:
-                        activity_urn = urn
-                        break
-            result["remote_ref"] = share_urn or activity_urn
+            result["remote_ref"] = _extract_post_remote_ref(resp_data)
         except Exception:
             result["response_text"] = response.text[:500]
     else:
@@ -548,6 +591,50 @@ def _dm_send(session: Session, plan: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
+def _comment_post(session: Session, plan: dict[str, Any]) -> dict[str, Any]:
+    """POST a public comment through the same action lifecycle as other writes."""
+    from linkedin_cli.comment import _comment_headers
+
+    live_req = plan["live_request"]
+    url = "https://www.linkedin.com" + live_req["path"]
+    body = live_req["body"]
+    headers = _comment_headers(
+        session,
+        referer=live_req.get("post_url", "https://www.linkedin.com/feed/"),
+        reply=(live_req.get("delivery_mode") == "comment_reply"),
+    )
+
+    response = session.post(
+        url,
+        json=body,
+        headers=headers,
+        timeout=DEFAULT_TIMEOUT,
+    )
+
+    result: dict[str, Any] = {
+        "http_status": response.status_code,
+        "remote_ref": None,
+        "error": None,
+    }
+
+    if response.status_code < 400:
+        try:
+            response_data = response.json()
+            result["response_data"] = response_data
+            result["remote_ref"] = (
+                response_data.get("entityUrn")
+                or response_data.get("data", {}).get("entityUrn")
+                or response_data.get("data", {}).get("urn")
+            )
+        except Exception:
+            result["response_text"] = response.text[:500]
+    else:
+        snippet = response.text[:500].strip().replace("\n", " ") if response.text else ""
+        result["error"] = f"HTTP {response.status_code}: {snippet}"
+
+    return result
+
+
 def _image_post_publish(session: Session, plan: dict[str, Any]) -> dict[str, Any]:
     """Multi-step image post: register upload, upload image, publish post."""
     steps = plan["live_request"]["steps"]
@@ -601,6 +688,13 @@ def _image_post_publish(session: Session, plan: dict[str, Any]) -> dict[str, Any
             "error": f"No uploadUrl in registration response: {json.dumps(reg_data)[:300]}",
             "step": "register_upload",
         }
+    if not image_urn:
+        return {
+            "http_status": reg_response.status_code,
+            "remote_ref": None,
+            "error": f"No media urn in registration response: {json.dumps(reg_data)[:300]}",
+            "step": "register_upload",
+        }
 
     # Step 2: Upload image binary
     image_path = steps[1]["file_path"]
@@ -642,11 +736,21 @@ def _image_post_publish(session: Session, plan: dict[str, Any]) -> dict[str, Any
 
     # Replace the media URN placeholder
     media_list = (
+        pub_body.get("variables", {})
+        .get("post", {})
+        .get("media", [])
+    )
+    for media_item in media_list:
+        if "media_urn_from" in media_item:
+            del media_item["media_urn_from"]
+            media_item["media"] = image_urn
+
+    legacy_media_list = (
         pub_body.get("specificContent", {})
         .get("com.linkedin.ugc.ShareContent", {})
         .get("media", [])
     )
-    for media_item in media_list:
+    for media_item in legacy_media_list:
         if "media_urn_from" in media_item:
             del media_item["media_urn_from"]
             media_item["media"] = image_urn
@@ -655,7 +759,7 @@ def _image_post_publish(session: Session, plan: dict[str, Any]) -> dict[str, Any
     pub_response = session.post(
         pub_url,
         json=pub_body,
-        headers=headers,
+        headers=_voyager_headers(session, share=True),
         timeout=DEFAULT_TIMEOUT,
     )
 
@@ -669,11 +773,7 @@ def _image_post_publish(session: Session, plan: dict[str, Any]) -> dict[str, Any
     if pub_response.status_code < 400:
         try:
             resp_data = pub_response.json()
-            result["remote_ref"] = (
-                resp_data.get("value", {}).get("activityUrn")
-                or resp_data.get("data", {}).get("activityUrn")
-                or resp_data.get("activityUrn")
-            )
+            result["remote_ref"] = _extract_post_remote_ref(resp_data)
             result["response_data"] = resp_data
         except Exception:
             result["response_text"] = pub_response.text[:500]

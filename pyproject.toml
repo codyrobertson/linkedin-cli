@@ -23,12 +23,26 @@ classifiers = [
 ]
 
 dependencies = [
+    "duckdb>=1.5",
+    "numpy>=2.0",
     "requests>=2.28",
     "beautifulsoup4>=4.11",
 ]
 
 [project.optional-dependencies]
 lxml = ["lxml>=4.9"]
+browser = ["playwright>=1.40"]
+semantic = ["fastembed>=0.8.0"]
+ann = ["hnswlib>=0.8"]
+qwen = [
+    "accelerate>=1.0",
+    "datasets>=3.0",
+    "modal>=0.73",
+    "peft>=0.13",
+    "transformers>=4.45",
+    "trl>=0.11",
+    "wandb>=0.18",
+]
 dev = [
     "build>=1.2",
     "pytest>=7.0",

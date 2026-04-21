@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-fintech-automation",
+  "scope": "all",
+  "industry": "fintech",
+  "topics": [
+    "automation"
+  ],
+  "sample_count": 264,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.7986,
+    "rmse": 2.2401,
+    "r2": 0.3793
+  },
+  "model": {
+    "model_name": "slice-fintech-automation",
+    "created_at": "2026-03-27T17:25:18.586542+00:00",
+    "updated_at": "2026-03-27T17:25:18.586542+00:00",
+    "scope": "all",
+    "sample_count": 264,
+    "intercept": 2.603158806199389,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.3696425961587441,
+      -0.5184670239028741,
+      0.5994705679829512,
+      1.3004220715346224,
+      2.713468132950804,
+      -0.5718605871788426,
+      -1.208489496095671,
+      1.0639452805247112,
+      0.19719579781028132,
+      -0.038405321043386724,
+      0.513676962980554,
+      0.03863902223819949,
+      -0.6742708826951404,
+      1.778864817032561,
+      0.0,
+      -0.2555375045383469,
+      -0.7272189527677746,
+      0.24741595176312814,
+      -0.36979751294350993,
+      -0.037129472012481665,
+      0.0,
+      -0.5659252648019328,
+      0.3331626438661846,
+      -0.09565089965125252
+    ],
+    "metrics": {
+      "mae": 1.7986,
+      "r2": 0.3793,
+      "rmse": 2.2401
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "fintech",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.9267,
+      "topics": [
+        "automation"
+      ]
+    }
+  }
+}

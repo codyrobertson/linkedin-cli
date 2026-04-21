@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-data-workflow",
+  "scope": "all",
+  "industry": "data",
+  "topics": [
+    "workflow"
+  ],
+  "sample_count": 443,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 2.3004,
+    "rmse": 2.923,
+    "r2": 0.2579
+  },
+  "model": {
+    "model_name": "slice-data-workflow",
+    "created_at": "2026-03-27T17:32:37.814476+00:00",
+    "updated_at": "2026-03-27T17:32:37.814476+00:00",
+    "scope": "all",
+    "sample_count": 443,
+    "intercept": 3.3660342247507713,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.9032760238376777,
+      -0.007402793180194968,
+      0.8620548191060876,
+      0.13881116819581338,
+      2.1558579365805812,
+      -1.5517137895893813,
+      -0.4062296246034456,
+      1.0401143074447001,
+      1.103708451444437,
+      0.05108193346725651,
+      0.7284513704304801,
+      -0.5312219614559873,
+      -1.326381386396431,
+      1.4786447176064539,
+      0.0,
+      -0.9344864444484119,
+      0.13987989890845368,
+      0.23220270385153788,
+      -0.6119061618355582,
+      -0.21396372358889498,
+      0.5262392303259232,
+      -0.32227540063296395,
+      0.3325080200306471,
+      -0.2730058059875727
+    ],
+    "metrics": {
+      "mae": 2.3004,
+      "r2": 0.2579,
+      "rmse": 2.923
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "data",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 4.3791,
+      "topics": [
+        "workflow"
+      ]
+    }
+  }
+}

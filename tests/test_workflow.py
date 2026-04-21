@@ -87,3 +87,34 @@ class WorkflowStoreTests(unittest.TestCase):
         self.assertEqual(len(contacts), 1)
         self.assertEqual(contacts[0]["profile_key"], "john-doe")
         second_tempdir.cleanup()
+
+    def test_sync_contacts_from_queue_and_search_results(self) -> None:
+        synced_from_queue = self.workflow.sync_contacts_from_queue(
+            [
+                {
+                    "profile_key": "john-doe",
+                    "public_identifier": "john-doe",
+                    "display_name": "John Doe",
+                    "state": "engaged",
+                    "score": 12.5,
+                    "company": "Acme",
+                    "entity_type": "person",
+                }
+            ]
+        )
+        synced_from_search = self.workflow.sync_contacts_from_search_results(
+            [
+                {
+                    "url": "https://www.linkedin.com/in/jane-doe/",
+                    "title": "Jane Doe - Founder",
+                    "snippet": "fintech founder",
+                }
+            ]
+        )
+
+        contacts = self.workflow.list_contacts()
+
+        self.assertEqual(len(synced_from_queue), 1)
+        self.assertEqual(synced_from_queue[0]["stage"], "qualified")
+        self.assertEqual(len(synced_from_search), 1)
+        self.assertEqual(len(contacts), 2)

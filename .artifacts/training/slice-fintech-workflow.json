@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-fintech-workflow",
+  "scope": "all",
+  "industry": "fintech",
+  "topics": [
+    "workflow"
+  ],
+  "sample_count": 191,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.8812,
+    "rmse": 2.4761,
+    "r2": 0.3316
+  },
+  "model": {
+    "model_name": "slice-fintech-workflow",
+    "created_at": "2026-03-27T17:25:23.957424+00:00",
+    "updated_at": "2026-03-27T17:25:23.957424+00:00",
+    "scope": "all",
+    "sample_count": 191,
+    "intercept": 2.346736071338746,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.2028686251114192,
+      -0.12038046901695328,
+      0.3792845081000024,
+      0.8221257109867542,
+      2.142289838358485,
+      1.1578493260868405,
+      -1.5985204875413812,
+      1.4455527750229133,
+      0.24004735851796233,
+      -0.04892276312047666,
+      0.9563505451342754,
+      0.22295328303146167,
+      -0.8522914156809891,
+      1.4076916979852387,
+      0.0,
+      -0.5991570719404837,
+      -0.1054742361744184,
+      -0.00512323564066741,
+      0.4962144032825697,
+      0.2713254005724728,
+      0.0,
+      -0.7365053545043951,
+      -0.19118930622969096,
+      -0.5495996868765262
+    ],
+    "metrics": {
+      "mae": 1.8812,
+      "r2": 0.3316,
+      "rmse": 2.4761
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "fintech",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.5764,
+      "topics": [
+        "workflow"
+      ]
+    }
+  }
+}

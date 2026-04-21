@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-ai-enterprise",
+  "scope": "all",
+  "industry": "ai",
+  "topics": [
+    "enterprise"
+  ],
+  "sample_count": 434,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 1.9199,
+    "rmse": 2.4995,
+    "r2": 0.328
+  },
+  "model": {
+    "model_name": "slice-ai-enterprise",
+    "created_at": "2026-03-27T17:24:54.619472+00:00",
+    "updated_at": "2026-03-27T17:24:54.619472+00:00",
+    "scope": "all",
+    "sample_count": 434,
+    "intercept": 2.274253569251742,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      0.5188472693663168,
+      -0.10587414192744864,
+      0.4160993877080454,
+      0.5424738998913196,
+      2.815920690454021,
+      0.23368961792840812,
+      -0.17351227639985028,
+      0.3986044150957528,
+      0.03482766008449197,
+      -0.045265353616628846,
+      -0.3588682009729279,
+      -0.12295267975610061,
+      -1.0241338696962257,
+      2.52310867585715,
+      0.0,
+      -0.4932017689066074,
+      -0.20535915632110327,
+      0.06406323102942643,
+      -0.0360655594634926,
+      0.5745954632746191,
+      -0.24776599959911152,
+      -0.4093259545772971,
+      -0.07084064939296726,
+      -0.4450949944400344
+    ],
+    "metrics": {
+      "mae": 1.9199,
+      "r2": 0.328,
+      "rmse": 2.4995
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "ai",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.415,
+      "topics": [
+        "enterprise"
+      ]
+    }
+  }
+}

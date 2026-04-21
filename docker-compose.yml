@@ -1,0 +1,49 @@
+services:
+  searxng:
+    image: searxng/searxng:latest
+    ports:
+      - 127.0.0.1:8080:8080
+    environment:
+      FORCE_OWNERSHIP: "true"
+      SEARXNG_BASE_URL: http://127.0.0.1:8080/
+    volumes:
+      - searxng_config:/etc/searxng
+      - searxng_data:/var/cache/searxng
+
+  linkedin-cli:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: linkedin-cli-local
+    working_dir: /workspace
+    environment:
+      LINKEDIN_CLI_HOME: /data
+      LINKEDIN_QWEN_ARTIFACTS: /data/artifacts/qwen
+    volumes:
+      - .:/workspace
+      - linkedin_cli_data:/data
+    stdin_open: true
+    tty: true
+    command: ["--help"]
+
+  ultrabroad-scrape:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: linkedin-cli-local
+    working_dir: /workspace
+    depends_on:
+      - searxng
+    environment:
+      LINKEDIN_CLI_HOME: /data
+      LINKEDIN_QWEN_ARTIFACTS: /data/artifacts/qwen
+      SEARXNG_URL: http://searxng:8080
+    volumes:
+      - .:/workspace
+      - ${HOME}/.config/linkedin-cli:/data
+    entrypoint: ["python", "/workspace/scripts/run_ultrabroad_scrape.py"]
+
+volumes:
+  linkedin_cli_data:
+  searxng_config:
+  searxng_data:

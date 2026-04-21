@@ -1,0 +1,92 @@
+{
+  "trained": true,
+  "model_name": "slice-ai-infrastructure",
+  "scope": "all",
+  "industry": "ai",
+  "topics": [
+    "infrastructure"
+  ],
+  "sample_count": 467,
+  "feature_count": 24,
+  "metrics": {
+    "mae": 2.192,
+    "rmse": 2.8324,
+    "r2": 0.303
+  },
+  "model": {
+    "model_name": "slice-ai-infrastructure",
+    "created_at": "2026-03-27T17:25:07.733413+00:00",
+    "updated_at": "2026-03-27T17:25:07.733413+00:00",
+    "scope": "all",
+    "sample_count": 467,
+    "intercept": 2.9482508040013053,
+    "feature_names": [
+      "hook_strength",
+      "specificity",
+      "novelty",
+      "authority",
+      "narrative",
+      "instructional",
+      "contrarian",
+      "emotionality",
+      "engagement_cta",
+      "listiness",
+      "proof",
+      "density",
+      "hashtag_load",
+      "word_count_scaled",
+      "structure:list",
+      "structure:question",
+      "structure:how_to",
+      "structure:insight",
+      "hook_type:question",
+      "hook_type:number",
+      "hook_type:directive",
+      "hook_type:contrarian",
+      "hook_type:personal",
+      "hook_type:statement"
+    ],
+    "coefficients": [
+      1.064946316435426,
+      -0.0741021134277137,
+      0.3319664900682324,
+      0.07971476821568982,
+      3.0011257728831313,
+      0.24114271614176908,
+      -0.5222321393176336,
+      0.48956620277854984,
+      0.07966891373623639,
+      0.05096361343511802,
+      0.10424920576154763,
+      -0.2997275577405275,
+      -1.6289865113961854,
+      1.9156159006231717,
+      0.0,
+      -0.43625143483146644,
+      -0.44228132346172183,
+      0.37434330999435517,
+      -0.31373769591015427,
+      0.9324375321127031,
+      -0.3191476687515174,
+      -0.7033335432158819,
+      0.4255872796829716,
+      -0.5259953522169549
+    ],
+    "metrics": {
+      "mae": 2.192,
+      "r2": 0.303,
+      "rmse": 2.8324
+    },
+    "metadata": {
+      "epochs": 600,
+      "industry": "ai",
+      "learning_rate": 0.08,
+      "relevance_min": 0.35,
+      "ridge": 0.02,
+      "target_mean": 3.8667,
+      "topics": [
+        "infrastructure"
+      ]
+    }
+  }
+}
